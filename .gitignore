@@ -1,0 +1,40 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.nav
+*.snm
+*.vrb
+*.lot
+*.lof
+*.gz
+
+# PDFs and other build outputs (uncomment if you don't want PDFs in repo)
+# *.pdf
+
+# LaTeX intermediate folders
+_build/
+build/
+
+# TeXShop/TeXworks temporary files
+*.tex~
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
+
+# Windows thumbnail cache
+Thumbs.db
+
+# Mac
+.DS_Store

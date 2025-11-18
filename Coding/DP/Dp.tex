@@ -1,0 +1,132 @@
+\documentclass\[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{margin=1in}
+\title{Dynamic Programming Lecture Notes}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section\*{Chapter 1: Climbing Stairs (Fibonacci-style DP)}
+
+\subsection\*{Problem Statement}
+Given a staircase with \$n\$ steps, a person may climb either 1 or 2 steps at a time. The goal is to determine the total number of distinct ways to reach the top of the staircase (i.e., step \$n\$), starting from the ground (step 0).
+
+\subsection\*{Motivation}
+This problem exemplifies a fundamental category of dynamic programming: problems with a linear progression and a recurrence that only depends on a fixed number of previous states. It is a simplified version of the Fibonacci sequence and serves as an ideal entry point into DP thinking.
+
+\subsection\*{Recursive Formulation}
+Let \$f(n)\$ represent the number of ways to reach step \$n\$. Since the person can either take a single step or a double step, the recurrence relation becomes:
+\begin{equation\*}
+f(n) = f(n - 1) + f(n - 2), \quad \text{for } n \geq 2
+\end{equation\*}
+with base cases:
+\begin{equation\*}
+f(0) = 1, \quad f(1) = 1
+\end{equation\*}
+
+\subsection\*{Top-Down Approach (Memoization)}
+The naive recursive implementation suffers from exponential time complexity due to overlapping subproblems. By storing the results of subproblems in a cache (i.e., memoization), we can reduce the time complexity to linear.
+
+\textbf{Complexity:}
+\begin{itemize}
+\item Time: \$\mathcal{O}(n)\$
+\item Space: \$\mathcal{O}(n)\$ (due to recursion stack and cache)
+\end{itemize}
+
+\subsection\*{Bottom-Up Approach (Tabulation)}
+In tabulation, we iteratively compute all values from the base cases up to \$f(n)\$, storing them in a one-dimensional array \$dp\$ where \$dp\[i]\$ represents the number of ways to reach step \$i\$.
+
+\textbf{Recurrence:}
+\begin{equation\*}
+dp\[i] = dp\[i - 1] + dp\[i - 2], \quad \text{for } i \geq 2
+\end{equation\*}
+with:
+\begin{equation\*}
+dp\[0] = 1, \quad dp\[1] = 1
+\end{equation\*}
+
+\textbf{Complexity:}
+\begin{itemize}
+\item Time: \$\mathcal{O}(n)\$
+\item Space: \$\mathcal{O}(n)\$
+\end{itemize}
+
+\subsection\*{Space Optimization}
+Since each state only depends on the previous two states, the array can be replaced by two scalar variables, reducing space complexity.
+
+\textbf{Optimized Complexity:}
+\begin{itemize}
+\item Time: \$\mathcal{O}(n)\$
+\item Space: \$\mathcal{O}(1)\$
+\end{itemize}
+
+\subsection\*{Conclusion}
+The Climbing Stairs problem highlights key principles of dynamic programming:
+\begin{itemize}
+\item Optimal substructure: each subproblem is solved independently.
+\item Overlapping subproblems: recursive calls compute the same values multiple times.
+\item Efficiency through memoization and tabulation.
+\item Space reduction when dependencies are limited.
+\end{itemize}
+
+
+\section\*{Chapter 2: 0/1 Knapsack Problem}
+
+\subsection\*{Problem Statement}
+Given a set of \$n\$ items, each with a weight \$w\_i\$ and a value \$v\_i\$, and a knapsack with maximum capacity \$W\$, determine the maximum total value of items that can be placed in the knapsack such that the total weight does not exceed \$W\$. Each item can be selected at most once.
+
+\subsection\*{Motivation}
+The 0/1 Knapsack problem is one of the most fundamental and widely applicable problems in dynamic programming. It introduces the idea of making binary choices (include or exclude) under constraints and is foundational for understanding resource allocation problems.
+
+\subsection\*{Dynamic Programming Formulation}
+Let \$dp\[i]\[w]\$ represent the maximum value achievable using the first \$i\$ items and total capacity \$w\$.
+
+\textbf{Recurrence Relation:}
+\begin{itemize}
+\item If \$w\_i > w\$: \$dp\[i]\[w] = dp\[i - 1]\[w]\$
+\item If \$w\_i \leq w\$: \$dp\[i]\[w] = \max(dp\[i - 1]\[w],\ dp\[i - 1]\[w - w\_i] + v\_i)\$
+\end{itemize}
+
+\textbf{Base Cases:}
+\begin{itemize}
+\item \$dp\[0]\[w] = 0\$ for all \$w\$
+\item \$dp\[i]\[0] = 0\$ for all \$i\$
+\end{itemize}
+
+\textbf{Complexity:}
+\begin{itemize}
+\item Time: \$\mathcal{O}(n \cdot W)\$
+\item Space: \$\mathcal{O}(n \cdot W)\$
+\end{itemize}
+
+\subsection\*{Space Optimization}
+Since \$dp\[i]\[w]\$ only depends on values from the previous row (\$dp\[i - 1]\[\cdot]\$), we can reduce the space complexity to \$\mathcal{O}(W)\$ using a single-dimensional array updated in reverse order.
+
+\textbf{Optimized Transition:}
+\begin{equation\*}
+\text{for each item } (w\_i, v\_i): \quad \text{for } w = W \text{ to } w\_i \text{ (step -1):}
+\quad dp\[w] = \max(dp\[w], dp\[w - w\_i] + v\_i)
+\end{equation\*}
+
+\textbf{Optimized Complexity:}
+\begin{itemize}
+\item Time: \$\mathcal{O}(n \cdot W)\$
+\item Space: \$\mathcal{O}(W)\$
+\end{itemize}
+
+\subsection\*{Conclusion}
+The 0/1 Knapsack problem introduces the following key ideas in DP:
+\begin{itemize}
+\item State definition with dual parameters (item count and capacity).
+\item Binary decision: include or exclude.
+\item Importance of loop direction in space optimization.
+\item Applications in budgeting, portfolio construction, and resource-limited optimization.
+\end{itemize}
+
+
+\end{document}

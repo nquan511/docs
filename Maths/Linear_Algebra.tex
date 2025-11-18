@@ -1,0 +1,450 @@
+\documentclass[11pt]{article}
+\newtheorem{definition}{Definition}[section]
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{geometry}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{physics}
+\usepackage{hyperref}
+
+\geometry{margin=1in}
+
+\title{Linear Algebra Lecture Notes}
+\author{University Course}
+\date{}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+
+\section{Matrix Derivative Rules}
+
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Function} & \textbf{Gradient w.r.t. } \(\mathbf{x}\) \\
+\hline
+\(\mathbf{b}^T \mathbf{x}\) or \(\mathbf{x}^T \mathbf{b}\) & \(\mathbf{b}\) \\
+\hline
+\(\mathbf{x}^T A \mathbf{x}\) & \((A + A^T)\mathbf{x}\); if \(A = A^T\): \(2A\mathbf{x}\) \\
+\hline
+\(\|\mathbf{x}\|^2 = \mathbf{x}^T \mathbf{x}\) & \(2\mathbf{x}\) \\
+\hline
+\(\|\mathbf{x}\|\) & \(\frac{\mathbf{x}}{\|\mathbf{x}\|}\), if \(\mathbf{x} \ne 0\) \\
+\hline
+\(\mathbf{b}^T A \mathbf{x}\) & \(A^T \mathbf{b}\) \\
+\hline
+\end{tabular}
+
+
+\section{Matrix Rank}
+\begin{definition} (Full Rank Matrix)
+    A matrix $A \in \mathbb{R}^{m \times n}$ is said to be of full rank if:
+    \begin{itemize}
+        \item For $m \leq n$: $\text{rank}(A) = m$ (full row rank)
+        \item For $m \geq n$: $\text{rank}(A) = n$ (full column rank)
+        \item For $m = n$: $\text{rank}(A) = n = m$ (full rank square matrix)
+    \end{itemize}
+A square matrix is full rank if and if and only if it is invertible
+\end{definition}
+
+\section{Jordan Canonical Form}
+
+For any $n \times n$ matrix $A$, there exists an invertible matrix $P$ such that:
+\begin{equation}
+    J = P^{-1}AP
+\end{equation}
+where $J$ is the Jordan canonical form of $A$.
+\begin{itemize}
+    \item \textbf{Block Diagonal:} $J$ is a block diagonal matrix composed of Jordan blocks.
+    \item \textbf{Jordan Blocks:} Each block $J_i$ has the form:
+    \begin{equation}
+        J_i = \begin{pmatrix}
+            \lambda_i & 1 & 0 & \cdots & 0 \\
+            0 & \lambda_i & 1 & \cdots & 0 \\
+            0 & 0 & \lambda_i & \cdots & 0 \\
+            \vdots & \vdots & \vdots & \ddots & \vdots \\
+            0 & 0 & 0 & \cdots & \lambda_i
+        \end{pmatrix}
+    \end{equation}
+    where $\lambda_i$ is an eigenvalue of $A$.
+\end{itemize}
+Key Properties:
+\begin{itemize}
+    \item \textbf{Existence:} Every square matrix has a Jordan canonical form.
+    \item \textbf{Uniqueness:} The JCF is unique up to the ordering of Jordan blocks.
+    \item \textbf{Eigenvalues:} The diagonal entries of $J$ are the eigenvalues of $A$.
+    \item \textbf{Algebraic Multiplicity:} Size of the corresponding Jordan block.
+    \item \textbf{Geometric Multiplicity:} Number of Jordan blocks for each distinct eigenvalue.
+    \item \textbf{Diagonalizability:} $A$ is diagonalizable if and only if $J$ is diagonal (all Jordan blocks are $1\times1$).
+    \item \textbf{Minimal Polynomial:} Degree of the largest Jordan block for each distinct eigenvalue.
+    \item \textbf{Nilpotent Part:} $(J - \lambda I)$ is nilpotent for each Jordan block.
+\end{itemize}
+
+\section{Positive Definite Matrices}
+
+A symmetric matrix \( A \in \mathbb{R}^{n \times n} \) is called \textbf{positive definite} if for all nonzero vectors \( \vec{x} \in \mathbb{R}^n \), the quadratic form \( \vec{x}^T A \vec{x} > 0 \). If the inequality is non-strict, i.e., \( \vec{x}^T A \vec{x} \ge 0 \), then \( A \) is called \textbf{positive semidefinite} (PSD).
+
+For a real symmetric matrix \( A \), the following are equivalent and characterize positive definiteness:
+\begin{itemize}
+  \item All eigenvalues of \( A \) are strictly positive.
+  \item All leading principal minors of \( A \) are strictly positive (Sylvester's criterion).
+  \item \( A \) admits a unique Cholesky decomposition \( A = LL^T \), where \( L \) is a lower triangular matrix with positive diagonal entries.
+  \item \( \vec{x}^T A \vec{x} > 0 \) for all \( \vec{x} \ne 0 \).
+\end{itemize}
+
+Geometrically, a positive definite matrix defines a strictly convex quadratic form, meaning the surface \( f(\vec{x}) = \vec{x}^T A \vec{x} \) curves upward in every direction. This property is crucial in optimization, where such forms guarantee unique global minima.
+
+Covariance matrices are classic examples of symmetric positive semidefinite matrices. Given a random vector \( \vec{X} \in \mathbb{R}^n \) with finite second moments, the covariance matrix is defined as:
+\[
+\Sigma = \operatorname{Cov}(\vec{X}) = \mathbb{E}\left[(\vec{X} - \mathbb{E}[\vec{X}])(\vec{X} - \mathbb{E}[\vec{X}])^T\right]
+\]
+
+\textbf{Proof that covariance matrices are positive semidefinite:}  
+Let \( \vec{x} \in \mathbb{R}^n \). Consider the quadratic form:
+\[
+\vec{x}^T \Sigma \vec{x} = \vec{x}^T \, \mathbb{E}\left[(\vec{X} - \mathbb{E}[\vec{X}])(\vec{X} - \mathbb{E}[\vec{X}])^T\right] \vec{x}
+\]
+By linearity of expectation:
+\[
+= \mathbb{E} \left[ \vec{x}^T (\vec{X} - \mathbb{E}[\vec{X}])(\vec{X} - \mathbb{E}[\vec{X}])^T \vec{x} \right]
+\]
+Recognizing the scalar product inside:
+\[
+= \mathbb{E} \left[ \left( \vec{x}^T (\vec{X} - \mathbb{E}[\vec{X}]) \right)^2 \right] \ge 0
+\]
+Since this is the expectation of a square, it is always non-negative. Therefore, \( \vec{x}^T \Sigma \vec{x} \ge 0 \) for all \( \vec{x} \), and \( \Sigma \) is positive semidefinite.
+
+
+
+\section{Matrix Factorizations}
+
+\subsection{Singular Value Decomposition (SVD)}
+
+Singular Value Decomposition (SVD) is a fundamental tool in linear algebra that generalizes the eigendecomposition of square matrices to any $m \times n$ matrix. It is widely used in numerical analysis, data compression, and machine learning.
+
+\subsubsection*{Definition}
+
+Let $A \in \mathbb{R}^{m \times n}$. Then the SVD of $A$ is:
+\[
+A = U \Sigma V^T
+\]
+where:
+\begin{itemize}
+  \item $U \in \mathbb{R}^{m \times m}$ is an orthogonal matrix (columns are called \textbf{left singular vectors}),
+  \item $V \in \mathbb{R}^{n \times n}$ is an orthogonal matrix (columns are \textbf{right singular vectors}),
+  \item $\Sigma \in \mathbb{R}^{m \times n}$ is a diagonal matrix with non-negative real numbers $\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_r > 0$ on the diagonal, called \textbf{singular values}.
+\end{itemize}
+
+\subsubsection*{Interpretation}
+
+The matrix $A$ can be expressed as a sum of rank-one matrices:
+\[
+A = \sum_{i=1}^r \sigma_i \, \mathbf{u}_i \mathbf{v}_i^T
+\]
+where $r = \text{rank}(A)$. Each term represents a scaled projection in the direction of $\mathbf{u}_i$ and $\mathbf{v}_i$.
+
+\subsubsection*{Geometric Meaning}
+
+The decomposition describes the action of $A$ as:
+\begin{enumerate}
+  \item a rotation or reflection by $V^T$,
+  \item followed by scaling by $\Sigma$,
+  \item followed by a rotation or reflection by $U$.
+\end{enumerate}
+
+\subsubsection*{Key Properties}
+
+\begin{itemize}
+  \item The number of nonzero singular values equals the rank of $A$.
+  \item $\sigma_i = \sqrt{\lambda_i}$ where $\lambda_i$ are eigenvalues of $A^TA$.
+  \item $\norm{A}_2 = \sigma_1$ (spectral norm).
+  \item $\norm{A}_F = \sqrt{\sum_{i=1}^r \sigma_i^2}$ (Frobenius norm).
+\end{itemize}
+
+\subsubsection*{Low-Rank Approximation}
+
+\textbf{Eckart–Young Theorem:} The best rank-$k$ approximation to $A$ in the Frobenius norm is given by truncating the SVD:
+\[
+A_k = \sum_{i=1}^k \sigma_i \, \mathbf{u}_i \mathbf{v}_i^T
+\]
+This $A_k$ minimizes $\norm{A - B}_F$ over all matrices $B$ of rank at most $k$.
+
+\subsubsection*{Applications}
+
+\begin{itemize}
+  \item \textbf{Principal Component Analysis (PCA)}: SVD is used to find principal directions.
+  \item \textbf{Data compression}: keep only the top $k$ singular values.
+  \item \textbf{Noise reduction}: discard small singular values.
+  \item \textbf{Text analysis}: Latent Semantic Analysis in NLP.
+  \item \textbf{Solving ill-posed problems}: truncated SVD for numerical stability.
+\end{itemize}
+
+\subsection{LDL\textsuperscript{T} Decomposition}
+
+Let \( A \in \mathbb{R}^{n \times n} \) be a real symmetric matrix. Then, under mild conditions, \( A \) admits an \textbf{LDL\textsuperscript{T} decomposition}:
+\[
+A = L D L^T
+\]
+where:
+\begin{itemize}
+  \item \( L \) is a unit lower triangular matrix (i.e., lower triangular with 1s on the diagonal),
+  \item \( D \) is a diagonal matrix,
+  \item \( L^T \) is the transpose of \( L \).
+\end{itemize}
+
+This decomposition always exists when \( A \) is symmetric and nonsingular. It is especially useful in numerical algorithms because it avoids computing square roots, unlike the Cholesky decomposition.
+\subsection{Cholesky Decomposition}
+
+Let \( A \in \mathbb{R}^{n \times n} \) be a real symmetric positive definite matrix. Then \( A \) admits a unique \textbf{Cholesky decomposition}:
+\[
+A = L L^T
+\]
+where \( L \) is a lower triangular matrix with strictly positive diagonal entries.
+
+The Cholesky decomposition is efficient for solving linear systems \( A \vec{x} = \vec{b} \), particularly in large-scale problems. It is also widely used in numerical optimization and probabilistic modeling, such as in sampling from multivariate normal distributions.
+
+If \( A \) is symmetric but not positive definite, the Cholesky decomposition does not exist in the real domain.
+
+There is a close relationship between the Cholesky and LDL\textsuperscript{T} decompositions. If \( A = L D L^T \) is the LDL\textsuperscript{T} decomposition of a positive definite matrix, then one can construct the Cholesky factor as:
+\[
+A = (L \sqrt{D})(L \sqrt{D})^T
+\]
+where \( \sqrt{D} \) is the diagonal matrix formed by taking square roots of the entries of \( D \).
+
+
+\section{Principal Component Analysis (PCA)}\label{sec:pca}
+Principal Component Analysis (PCA) is a linear dimensionality reduction technique that seeks to find a new orthogonal basis, called principal components, that maximizes the variance of the projected data.
+Given a dataset $\mathbf{X} \in \mathbb{R}^{n \times p}$ with $n$ observations and $p$ features, PCA aims to find a linear transformation $\mathbf{W} \in \mathbb{R}^{p \times k}$ that projects $\mathbf{X}$ onto a lower $k$-dimensional subspace while maximizing the variance of the projected data.
+\paragraph{Step 1: Data Centering}
+Center the data by subtracting the mean of each feature:
+\begin{equation}
+    \mathbf{\bar{X}} = \mathbf{X} - \mathbf{1}\boldsymbol{\mu}^T
+\end{equation}
+where $\boldsymbol{\mu} = \frac{1}{n}\sum_{i=1}^n \mathbf{x}_i$ is the mean vector and $\mathbf{1}$ is a vector of ones.
+\paragraph{Step 2: Covariance Matrix Computation}
+Calculate the sample covariance matrix:
+\begin{equation}
+    \mathbf{C} = \frac{1}{n-1}\mathbf{\bar{X}}^T\mathbf{\bar{X}}
+\end{equation}
+\paragraph{Step 3: Eigendecomposition}
+Since the covariance matrix C is symmetric and positive semidefinite, we can perform eigenvalue decomposition.
+\begin{equation}
+    \mathbf{C} = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^T
+\end{equation}
+where:
+\begin{itemize}
+    \item $\mathbf{V} \in \mathbb{R}^{p \times p}$ is an orthogonal matrix whose columns are the eigenvectors of $\mathbf{C}$
+    \item $\mathbf{\Lambda} \in \mathbb{R}^{p \times p}$ is a diagonal matrix containing the eigenvalues of $\mathbf{C}$
+\end{itemize}
+Explicitly, these matrices have the following form:
+\begin{equation}
+    \mathbf{V} = [\mathbf{v}_1 \; \mathbf{v}_2 \; \cdots \; \mathbf{v}_p]
+\end{equation}
+where $\mathbf{v}_i$ are the eigenvectors of $\mathbf{C}$, and
+\begin{equation}
+    \mathbf{\Lambda} = 
+    \begin{bmatrix}
+        \lambda_1 & 0 & \cdots & 0 \\
+        0 & \lambda_2 & \cdots & 0 \\
+        \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & \cdots & \lambda_p
+    \end{bmatrix}
+\end{equation}
+where $\lambda_i$ are the eigenvalues of $\mathbf{C}$, typically arranged in descending order $\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_p$.
+We can use Cholesky Decomposition on $\Lambda$ since it's positive semidefinite.
+\begin{equation}
+    \mathbf{C} = \mathbf{V}\mathbf{\Lambda}\mathbf{V}^T = \mathbf{V}\mathbf{\delta}^T\mathbf{\delta}\mathbf{V}^T = (\mathbf{\delta}\mathbf{V}^T)^T(\mathbf{\delta}\mathbf{V}^T)
+\end{equation}
+Hence, we can write 
+\begin{equation}
+    (\mathbf{\delta}\mathbf{V}^T)^T(\mathbf{\delta}\mathbf{V}^T) = \mathbf{\bar{X}}^T\mathbf{\bar{X}},
+\end{equation}
+and hence 
+\begin{equation}
+    \mathbf{\bar{X}} = \mathbf{\delta}\mathbf{V}^T
+\end{equation}
+or
+\begin{equation}
+    \mathbf{\delta} = \mathbf{\bar{X}}\mathbf{V}.
+\end{equation}
+The new projected data $\mathbf{\delta}$ is called the Principal Components (PCs) or Scores while the eigenvectors matrix $\mathbf{V}$ is called the Loadings. Note that, in the \texttt{scikit-learn} package, the notations are \texttt{delta = pca.fit\_transform(X)} and \texttt{V\_T = pca.components\_}.
+
+\paragraph{Step 4: Sorting Eigenvectors}
+Sort the eigenvectors in descending order of their corresponding eigenvalues:
+\begin{equation}
+    \lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_p
+\end{equation}
+\paragraph{Step 5: Dimensionality Reduction}
+Choose the first $k$ eigenvectors to form the projection matrix:
+\begin{equation}
+    \mathbf{W} = [\mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_k], \mathbf{W} \in  \mathbb{R}^{p \times k}
+\end{equation}
+\begin{equation}
+    \mathbf{\hat{\delta}} = [\mathbf{\delta}_1, \mathbf{\delta}_2, \ldots, \mathbf{\delta}_k], \mathbf{\delta} \in  \mathbb{R}^{n \times k}
+\end{equation}
+\paragraph{Step 6: Data Projection}
+Reconstruct the centered data using the new $k$-dimensional subspace:
+\begin{equation}
+    \mathbf{Y} = \mathbf{\hat{\delta}}\mathbf{W}^T, \mathbf{Y} \in \mathbb{R}^{n \times p}
+\end{equation}
+
+\subsection{Data Centering in PCA}
+Consider a dataset $\mathbf{X} \in \mathbb{R}^{n \times p}$ with $n$ observations and $p$ features. PCA on non-centering data referes to eigendecomposition on the $\frac{1}{n-1} \mathbf{X}^T \mathbf{X}$ matrix instead of the covariance. 
+\begin{enumerate}
+    \item The PCA is performed on the matrix:
+    \begin{equation}
+        \mathbf{\hat{S}} = \frac{1}{n-1} \mathbf{X}^T \mathbf{X}
+    \end{equation}
+    \item We can decompose $\mathbf{X}$ into its mean part and the centered part:
+    \begin{equation}
+        \mathbf{X} = \mathbf{1}\boldsymbol{\mu}^T + \mathbf{X}_c
+    \end{equation}
+    where $\mathbf{1}$ is a column vector of ones, $\boldsymbol{\mu}$ is the mean vector, and $\mathbf{X}_c$ is the centered data.
+    \item Substituting this into the covariance matrix:
+    \begin{align}
+        \mathbf{\hat{S}} &= \frac{1}{n-1} (\mathbf{1}\boldsymbol{\mu}^T + \mathbf{X}_c)^T (\mathbf{1}\boldsymbol{\mu}^T + \mathbf{X}_c) \\
+        &= \frac{1}{n-1} (n\boldsymbol{\mu}\boldsymbol{\mu}^T + \boldsymbol{\mu}\mathbf{1}^T \mathbf{X}_c + \mathbf{X}_c^T \mathbf{1}\boldsymbol{\mu}^T + \mathbf{X}_c^T \mathbf{X}_c)
+    \end{align}
+    \item As $n$ approaches infinity, the dominant term becomes $\boldsymbol{\mu}\boldsymbol{\mu}^T$, assuming the mean is non-zero.
+    \item The eigenvector corresponding to the largest eigenvalue of $\boldsymbol{\mu}\boldsymbol{\mu}^T$ is proportional to $\boldsymbol{\mu}$ itself.
+    \item Therefore, as $n$ gets large, the first principal component of the uncentered data will align more closely with the mean vector $\boldsymbol{\mu}$, rather than the direction of maximum variance in the centered data.
+\end{enumerate}
+
+One may think why we need to think about the case of performing PCA on this weird matrix $\hat{S}$. This is due to we can quickly perform PCA and SVD decompoistion at the same time if the data is centered. We can compute the SVD of \(X\):
+\begin{equation}
+  X = U\,S\,V^T,
+\end{equation}
+where
+\begin{itemize}
+  \item \(U\in\mathbb{R}^{n\times p}\) has orthonormal columns (left singular vectors),
+  \item \(S=\mathrm{diag}(s_1,s_2,\dots,s_{\min(n,p)})\) contains the singular values \(s_i\ge0\),
+  \item \(V\in\mathbb{R}^{p\times p}\) has orthonormal columns (right singular vectors).
+\end{itemize}
+From this decomposition,
+\[
+C = \frac{1}{n-1}\,X^T X
+  = \frac{1}{n-1}\,V\,S\,U^T\,U\,S\,V^T
+  = V\;\frac{S^2}{n-1}\;V^T,
+\]
+showing that
+\begin{itemize}
+  \item the right singular vectors \(V\) are the principal directions (eigenvectors) of \(C\),
+  \item the eigenvalues satisfy
+    \(\displaystyle \lambda_i = \frac{s_i^2}{\,n-1\,}.\)
+\end{itemize}
+Moreover, the PC scores can be written
+\[
+X\,V = U\,S\,V^T\,V = U\,S,
+\]
+so that the columns of \(U S\) are the principal component vectors (scores).
+
+\medskip
+
+\paragraph{Summary}
+\begin{itemize}
+  \item If \(X = U\,S\,V^T\), then the columns of \(V\) are the principal directions (eigenvectors) of the covariance matrix.
+  \item The columns of \(U\,S\) are the principal components (scores).
+  \item The singular values \(s_i\) relate to the covariance eigenvalues by
+    \[
+      \lambda_i = \frac{s_i^2}{\,n-1\,},
+    \]
+    and \(\lambda_i\) measures the variance explained by the \(i\)th PC.
+  \item \emph{This entire framework is valid only if \(X\) is centered}, i.e.\ its column means have been subtracted so that \(X^T X/(n-1)\) is the true sample covariance.
+\end{itemize}
+
+\subsection{Weak Stationarity and the Covariance Matrix}
+
+When applying PCA  to time series data, it is essential that each series be \emph{weakly stationary}.  A univariate process $\{x_t\}$ is weakly stationary if and only if:
+
+\begin{enumerate}
+  \item \textbf{Constant mean:} 
+    \[
+      \mathbb{E}[x_t] = \mu \quad\text{for all }t.
+    \]
+  \item \textbf{Finite, time–invariant variance:}
+    \[
+      \mathrm{Var}(x_t) = \mathbb{E}[(x_t - \mu)^2] = \sigma^2 < \infty
+      \quad\text{(same for all }t\text{).}
+    \]
+  \item \textbf{Autocovariance depends only on lag:}
+    \[
+      \mathrm{Cov}(x_t,\,x_{t+h})
+      = \mathbb{E}\bigl[(x_t-\mu)(x_{t+h}-\mu)\bigr]
+      = \gamma(h),
+    \]
+    i.e.\ a function of the lag $h$ alone, \emph{not} of the time index $t$.
+\end{enumerate}
+
+\medskip
+
+\paragraph{Implications for covariance estimation}
+
+\begin{itemize}
+  \item If the series are \emph{not} weakly stationary (e.g.\ raw prices with trends or time‐varying volatility), then the sample covariance
+    \[
+      \widehat{\mathrm{Cov}}\bigl(x^i,x^j\bigr)
+      \;=\;
+      \frac{1}{n-1}\sum_{t=1}^n \bigl(x^i_t-\bar x^i\bigr)\bigl(x^j_t-\bar x^j\bigr)
+    \]
+    will depend heavily on the chosen time window and may not converge to a stable population value.
+  \item Covariance‐based techniques (PCA, Mahalanobis distance, factor analysis) applied to non‐stationary data often pick up \emph{spurious} structure (trends, regime shifts) instead of genuine co‐movement.
+  \item Therefore, before constructing or interpreting a covariance matrix for time series, one should first transform the data (e.g.\ taking log‐returns, demeaning, or variance‐stabilizing) so that the resulting series are approximately weakly stationary.
+\end{itemize}
+
+
+\section{Kalman Filter}
+
+The Kalman Filter is a powerful algorithm used for state estimation in dynamic systems. It operates in two main phases: Predict and Update.
+
+\subsection{Model Components}
+\begin{itemize}
+    \item \textbf{State-Transition Model:} Describes how the state evolves over time.
+    \item \textbf{Observation Model:} Relates the true state to the observed measurements.
+    \item \textbf{Control-Input Model ($B_k$):} Represents the effect of control inputs on the state.
+    \item \textbf{Control Vector ($u_k$):} The vector of control inputs.
+    \item \textbf{Process Noise Covariance ($Q_k$):} Covariance of the process noise ($w_k$).
+    \item \textbf{Observation Noise Covariance ($R_k$):} Covariance of the observation noise.
+\end{itemize}
+
+\subsection{Predict Step}
+This step projects the state and covariance estimates from the previous time step to the current time step.
+\begin{itemize}
+    \item \textbf{Predicted State Estimate:}
+    $$ \hat{x}_{k|k-1} = F_k \hat{x}_{k-1|k-1} + B_k u_k $$
+    (Note: The document had $\frac{\beta_h \mu}{h}$ which is likely a typo and should represent $B_k u_k$ in standard Kalman filter notation.)
+    \item \textbf{Predicted Covariance Estimate:}
+    $$ P_{k|k-1} = F_k P_{k-1|k-1} F_k^T + Q_k $$
+    (Note: The document used $F_k^+$ which is interpreted as $F_k^T$ for the transpose of the state-transition matrix.)
+\end{itemize}
+
+\subsection{Update Step}
+This step corrects the predicted estimates using the current observation.
+\begin{itemize}
+    \item \textbf{Measurement Residual (Innovation):}
+    $$ \tilde{y}_k = z_k - H_k \hat{x}_{k|k-1} $$
+    This represents the difference between the actual observation ($z_k$) and the predicted observation ($H_k \hat{x}_{k|k-1}$).
+    \item \textbf{Residual Covariance:}
+    $$ S_k = H_k P_{k|k-1} H_k^T + R_k $$
+    This is the covariance of the measurement residual.
+    (Note: The document used $H^{\dagger}$ which is interpreted as $H_k^T$ for the transpose of the observation model matrix.)
+    \item \textbf{Kalman Gain:}
+    $$ K_k = P_{k|k-1} H_k^T S_k^{-1} $$
+    The Kalman gain determines how much the predictions are corrected based on the new measurement. The document implies $K_k$ is the Kalman gain. It "depends on which is more noisy", meaning it balances the uncertainty in the prediction and the measurement.
+    \item \textbf{Updated State Estimate:}
+    $$ \hat{x}_{k|k} = \hat{x}_{k|k-1} + K_k \tilde{y}_k $$
+    This updates the state estimate based on the residual and Kalman gain. The document mentions "update based on".
+    \item \textbf{Updated Covariance Estimate:}
+    $$ P_{k|k} = (I - K_k H_k) P_{k|k-1} $$
+    This updates the covariance estimate.
+\end{itemize}
+
+\subsection{Main Assumptions}
+\begin{itemize}
+    \item \textbf{Linearity and Time-Invariance:} The system is assumed to be linear and time-invariant in its state-space form.
+    \item \textbf{Noise Properties:} The state noise and measurement noise are assumed to be zero-mean and independent of each other.
+\end{itemize}
+\end{document}

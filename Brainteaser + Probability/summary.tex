@@ -1,0 +1,161 @@
+\documentclass{article}
+\usepackage{amsmath} % Required for align*
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref} % For clickable links in the PDF
+
+\title{Notes on Probability in Card Problems}
+\author{}
+\date{June 22, 2025}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents % This command generates the table of contents
+\newpage % Starts the content on a new page after the TOC
+
+\section{\textbf{Deck Problems}}
+\label{sec:draw-cards}
+
+\subsection{\textbf{Draw n Cards from Deck}}
+\label{sec:deck-problems}
+
+\subsubsection{\textbf{Expected Total Values}}
+When drawing cards from a deck, the expected total value of $n$ cards is the sum of the expected values of individual cards:
+\begin{align*}
+E(X_1 + X_2 + \dots + X_n) &= E(X_1) + \dots + E(X_n) \quad \text{}
+\end{align*}
+There is no reason for the distribution of $X_i$ to be different if drawing at the same time. Therefore, the formula simplifies to:
+\begin{align*}
+E(X_1 + X_2 + \dots + X_n) &= n \cdot E(X_i) = n \cdot \frac{(1+2+\dots+13)}{13} \quad \text{}
+\end{align*}
+
+\subsubsection{\textbf{Including Joker Cards}}
+If Joker cards are included in the deck, the expected value of the first card, $E(x_1)$, will be different. The calculation for $E(x_1)$ incorporating Jokers (assuming Jokers have a value of 100) is given as:
+\begin{align*}
+E(x_1) &= \frac{4}{54} \times (1+2+\dots+13) + \frac{2}{54} \times 100 \quad \text{}
+\end{align*}
+
+\subsubsection{\textbf{Replacing the Minimum Card}}
+The document also touches upon the concept of replacing the minimum card. A formula is presented for the expected value after such an operation:
+\begin{align*}
+E(x_1+x_2+\dots+x_{n+1}) - E(\min(x_1,x_2,x_3))
+\end{align*}
+The expected value of the minimum, $E(m)$, is calculated using the sum of probabilities:
+\begin{align*}
+E(m) &= \sum_{k=1}^{13} P(m=k)k \\
+&= P(m=1) + \dots + 13P(m=13) \\
+&= P(m=1) + P(m=2) + \dots + P(m=13) \\
+& \quad + P(m=2) + \dots + P(m=13) \\
+& \quad + \dots \\
+& \quad + P(m=13) \quad \text{}
+\end{align*}
+For a discrete uniform distribution, the probability that the minimum is greater than $k$ is given by:
+\begin{align*}
+P(m>k) &= (P(x_i \ge k))^n \\
+&= \left(1 - P(x_i \le k-1)\right)^n \\
+&= \left(1 - \frac{(k-1)-1+1}{13}\right)^n \quad \text{}
+\end{align*}
+
+\subsubsection{\textbf{Expected Number of Cards to See the First Ace}}
+\label{sec:first-ace}
+This section addresses the problem of finding the expected number of cards that need to be turned over to see the first Ace, given a deck with 4 Aces and 48 other cards.
+
+Let $X_i$ be an indicator variable such that:
+$$x_i = \begin{cases} 1 & \text{is card } i \text{ is turned over before 4 aces} \\ 0 & \text{otherwise} \end{cases}$$
+The total number of cards needed to be turned over is $X = 1 + \sum_{i=1}^{48} x_i$.
+The expected value $E[X]$ is thus:
+\begin{align*}
+E[X] &= 1 + 48E[X_i] \quad \text{}
+\end{align*}
+The card $i$ is equally likely to be in one of the five regions separated by the 4 Aces. Therefore, the probability $P(X_i)$ is:
+\begin{align*}
+E[X_i] &= P(X_i) = \frac{1}{5} \quad \text{}
+\end{align*}
+
+\textbf{Generalization}
+The concept can be generalized to ordering $m$ ordinary cards and $n$ special cards. The expected position of the first special card is given by:
+\begin{align*}
+E[x] &= 1 + m\frac{1}{m+1} \quad \text{}
+\end{align*}
+
+\subsection{\textbf{Distributed 52 Cards to Players}}
+\label{sec:distributed-cards}
+This section covers calculations related to distributing 52 cards to players, specifically focusing on poker hands and the probability of Aces in different piles.
+
+\subsubsection{\textbf{Poker Hands}}
+The total number of possible 5-card poker hands from a standard 52-card deck is given by $\binom{52}{5}$. The number of ways to form specific poker hands are as follows:
+
+\begin{itemize}
+    \item \textbf{One Pair}: The number of ways to get one pair is calculated as:
+    $$\binom{13}{1}\times\binom{4}{2}\times\binom{12}{3}\times\binom{4}{1}^{3}$$
+    \item \textbf{Two Pairs}: The number of ways to get two pairs is calculated as:
+    $$\binom{13}{2}\times\binom{4}{2}\times\binom{4}{2}\times\binom{11}{1}\times\binom{4}{1}$$
+    \item \textbf{Three of a Kind}: The number of ways to get three of a kind is calculated as:
+    $$\binom{13}{1}\times\binom{4}{3}\times\binom{12}{2}\times\binom{4}{1}^{2}$$
+    \item \textbf{Straight}: A straight consists of five cards of sequential rank, not all of the same suit. The calculation for straights involves choosing a low card from ranks 1 to 10. The number of such hands is given by:
+    $$\binom{10}{1} \left(\binom{4}{1}^{5} - \binom{4}{1}\right)$$
+    This formula accounts for choosing a low card out of 10 possibilities and then selecting suits for each of the five cards in the sequence ($4^5$), while deducting cases where all five cards are of the same suit (which would be a straight flush).
+    \item \textbf{Flush}: A flush consists of five cards of the same suit, not all of sequential rank. The number of ways to get a flush is calculated as:
+    $$\binom{13}{5}\times\binom{4}{1}-\binom{10}{1}\times\binom{4}{1}$$
+    This formula selects 5 ranks from 13 within one of the 4 suits, and then subtracts the number of straight flushes (including royal flushes) to ensure they are not counted as just flushes.
+    \item \textbf{Full House}: A full house consists of three cards of one rank and two cards of another rank. The number of ways to get a full house is calculated as:
+    $$13\times\binom{4}{3}\times12\times\binom{4}{2}$$
+    \item \textbf{Four of a Kind}: The number of ways to get four of a kind is calculated as:
+    $$13\times\binom{12}{1}\times\binom{4}{1}$$
+    \item \textbf{Straight Flush}: A straight flush consists of five cards of sequential rank, all of the same suit. The formula given for straight flush (excluding royal flush) is:
+    $$\binom{10}{1}\times\binom{4}{1}-\binom{4}{1}$$
+    This accounts for 10 possible low cards and 4 suits, then subtracts the 4 royal flushes.
+    \item \textbf{Royal Flush}: A Royal Flush is a specific type of straight flush: 10, Jack, Queen, King, Ace of the same suit. The number of Royal Flushes is 4 (one for each suit).
+\end{itemize}
+
+\subsubsection{\textbf{Probability Each Pile Has an Ace}}
+Consider distributing 52 cards into four piles, with each pile having $n=13$ cards. We want to calculate the probability that each pile contains exactly one Ace.
+
+\begin{enumerate}
+    \item \textbf{Probability the first pile has an Ace}: The probability that there is an Ace in the first pile is 1 (conceptually, we assume an Ace is placed in the first pile and calculate subsequent probabilities relative to this).
+    \item \textbf{Probability the second Ace belongs to a different pile}: After one Ace is placed, there are 51 cards remaining. Among these, $52-13=39$ cards are outside the first pile. The probability that the second Ace is in a different pile is:
+    \begin{align*}
+    \frac{52-13}{51} &= \frac{39}{51} \quad \text{}
+    \end{align*}
+    \item \textbf{Probability the third Ace belongs to a different pile}: After two Aces are in two different piles, there are 50 cards left. Of these, $39-13=26$ cards are in the remaining piles that don't yet have an Ace. The probability the third Ace is in a new pile is:
+    \begin{align*}
+    \frac{39-13}{50} &= \frac{26}{50} \quad \text{}
+    \end{align*}
+    \item \textbf{Probability the fourth Ace belongs to a different pile}: With three Aces in three different piles, there are 49 cards left. Of these, $26-13=13$ cards are in the last pile without an Ace. The probability the fourth Ace is in the last new pile is:
+    \begin{align*}
+    \frac{26-13}{49} &= \frac{13}{49} \quad \text{}
+    \end{align*}
+\end{enumerate}
+The total probability that each pile has an Ace is the product of these probabilities:
+\begin{align*}
+\text{Total Probability} &= 1\times\frac{39}{51}\times\frac{26}{50}\times\frac{13}{49} \quad \text{}
+\end{align*}
+
+\section{Normal Distribution}
+\subsection{Definition}
+A random variable \(X\) is said to follow a normal distribution with mean \(\mu \in \mathbb{R}\) and variance \(\sigma^2 > 0\), denoted by
+\[
+X \sim \mathcal{N}(\mu, \sigma^2),
+\]
+if its probability density function (PDF) is
+\[
+f_X(x) = \frac{1}{\sqrt{2\pi\sigma^2}} 
+\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right), \quad x \in \mathbb{R}.
+\]
+
+\subsection{Moment Generating Function}
+The moment generating function (MGF) of \(X \sim \mathcal{N}(\mu, \sigma^2)\) is
+\[
+M_X(t) = \mathbb{E}\!\left[e^{tX}\right] = 
+\exp\!\left( \mu t + \tfrac{1}{2}\sigma^2 t^2 \right), \quad t \in \mathbb{R}.
+\]
+
+\subsection{Special Case: Standard Normal}
+For the standard normal distribution \(Z \sim \mathcal{N}(0,1)\):
+\[
+f_Z(z) = \frac{1}{\sqrt{2\pi}} e^{-z^2/2}, \qquad 
+M_Z(t) = \exp\!\left( \tfrac{1}{2}t^2 \right).
+\]
+\end{document}

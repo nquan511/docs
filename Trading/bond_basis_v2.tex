@@ -1,0 +1,605 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{longtable}
+\usepackage{siunitx}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+\geometry{margin=1in}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% Title
+\title{Bond Basis}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\clearpage
+
+\section{Contract Specifications and Price Quotation}
+\label{sec:contracts}
+
+\subsection{Contract sizes and quoting conventions}
+Typical Treasury futures contract specifications (exchange conventions vary slightly by contract):
+\begin{itemize}
+  \item Contract size: usually \$100{,}000 par value of the deliverable bond. (Some short-dated contracts such as two-year futures can have different standard sizes; always check the exchange spec.)
+  \item Price quotation: prices are quoted per \$100 of par in full points and 32nds of a point. Example: \(106\text{-}08/32\) denotes \(106+\tfrac{8}{32}=106.25\) per \$100 of par.
+  \item Tick size: the minimum allowed price change is \(1/32\) of a percentage point (i.e. \(0.03125\) per \$100). For a \$100{,}000 contract, one tick (1/32) corresponds to
+  \[
+    \text{dollar value per tick} = \frac{1}{32}\times\frac{100{,}000}{100}=31.25.
+  \]
+\end{itemize}
+
+\section{Definition of the Bond Basis}
+\label{sec:basis}
+
+The (clean) \textbf{basis} of a deliverable bond relative to a futures contract is defined as
+\begin{equation}\label{eq:basis}
+B = P - (F\times CF),
+\end{equation}
+where
+\begin{itemize}
+  \item \(P\) is the \emph{clean} cash price of the bond expressed per \$100 of par,
+  \item \(F\) is the quoted futures settlement/price (per \$100 of par), and
+  \item \(CF\) is the contract's \emph{conversion factor} for that bond and delivery month.
+\end{itemize}
+
+When delivery occurs, the \emph{invoice price} paid by the future long to the short is
+\begin{equation}\label{eq:invoice}
+\text{Invoice Price (dirty)} = F\times CF + AI,
+\end{equation}
+where \(AI\) is accrued interest on the bond (expressed per \$100 of par).  Note carefully the difference between clean and dirty prices throughout these notes.
+
+\section{Conversion Factors}
+\label{sec:cf}
+
+Conversion factors (CFs) standardize deliverable bonds to a common baseline so the exchange can specify a single futures contract to which many bonds are eligible. The salient points are:
+\begin{itemize}
+  \item The CF for a bond is, by definition, the \emph{price per \$100} at which the bond would trade if it yielded a fixed notional yield (historically 6\%) to maturity, according to the standard day-count and coupon convention used by the exchange.
+  \item In formulaic terms, for a coupon bond with cash flows \(\{CF_k\}\) at payment dates \(k=1,\dots,n\) and notional yield \(y_{CF}\) (e.g. 6\%),
+  \[
+    CF = \frac{1}{100}\sum_{k=1}^n \frac{CF_k}{\left(1+\dfrac{y_{CF}}{m}\right)^k},
+  \]
+  where \(m\) is coupons per year (typically \(m=2\) for semiannual coupon Treasuries). Exchanges may round CFs to a specified number of decimal places according to rulebook conventions.
+  \item Key properties:
+  \begin{enumerate}[nosep]
+    \item CFs are unique to each bond \emph{and} delivery month, although in practice they are constant over that delivery cycle.
+    \item A bond with coupon \(>\) notional yield (e.g. \(>\)6\%) will typically have \(CF>1\); a bond with coupon \(<\) notional yield will typically have \(CF<1\).
+    \item As a bond approaches maturity its market price drifts towards par; therefore CFs for bonds with coupons above the notional yield exhibit a predictable pattern across contract months (and vice versa for low coupons).
+  \end{enumerate}
+\end{itemize}
+
+\section{Carry and the Implied Repo Rate (IRR)}
+\label{sec:carry}
+
+\subsection{Carry}
+Owning a coupon bond from trade date to delivery produces two principal cash effects:
+\begin{itemize}
+  \item \textbf{Coupon income} received at coupon dates before delivery, and
+  \item \textbf{Financing cost} of carrying the cash position (usually the repo rate paid to finance the bond purchase).
+\end{itemize}
+The \emph{carry} is the net of these two flows (coupon income minus financing cost) accumulated to the delivery date.
+
+\section{Implied Repo Rate (IRR)}
+
+The \textbf{implied repo rate (IRR)} is the annualised return from a cash-and-carry trade
+where one purchases the deliverable bond, finances it through repo, and delivers it into the futures contract at expiry. 
+It represents the \emph{break-even financing rate} implied by the futures price and the cash bond.
+
+\subsection*{Derivation}
+
+Suppose an investor:
+\begin{enumerate}
+    \item Purchases the bond today at dirty price $P_{0}$ (clean price $+$ accrued interest).
+    \item Finances this purchase via repo for $N$ days until the futures delivery date.
+    \item Receives coupon payments $C$ (if any) during the holding period.
+    \item At delivery, receives the invoice price:
+    \[
+    I = F \times CF + AI_{T},
+    \]
+    where $F$ is the futures price, $CF$ is the conversion factor, and $AI_{T}$ is accrued interest at delivery.
+\end{enumerate}
+
+If repo financing is at rate $r$ (simple interest, money market convention), 
+the repayment at maturity of the repo loan is
+\[
+P_{0} \times \left(1 + r \cdot \frac{N}{360}\right).
+\]
+
+No-arbitrage requires that the cash inflows equal the financed outflows:
+\[
+P_{0}\left(1 + r \cdot \frac{N}{360}\right) = I + C.
+\]
+
+\subsection*{Definition of Implied Repo Rate}
+
+Solving for $r$ gives the implied repo rate:
+\begin{equation}
+\text{IRR} = \frac{I + C - P_{0}}{P_{0}} \times \frac{360}{N}.
+\label{eq:irr}
+\end{equation}
+
+\begin{itemize}
+    \item Note: $P_{0}$ is always the \emph{dirty price} paid at initiation. 
+    Using only the clean price would overstate the return, since accrued interest is a real cash outflow.
+    \item The formula is essentially the internal rate of return of the trade, annualised on a money-market day-count basis.
+\end{itemize}
+
+\subsection*{Trading Interpretation}
+
+\begin{itemize}
+    \item The market repo rate $r_{\text{mkt}}$ is the actual cost of financing in the repo market.
+    \item The implied repo rate $\text{IRR}$ is the return \emph{implied by the futures price}.
+\end{itemize}
+
+\begin{description}
+    \item[If $\text{IRR} > r_{\text{mkt}}$:] The futures contract is ``rich''. A \textbf{cash-and-carry arbitrage} is profitable:
+    go long the bond (financed at repo), short the futures.
+    \item[If $\text{IRR} < r_{\text{mkt}}$:] The futures contract is ``cheap''. A \textbf{reverse cash-and-carry} is profitable:
+    short the bond (via reverse repo), go long the futures.
+\end{description}
+
+\section{Buying and Selling the Basis}
+\label{sec:buyingselling}
+
+By definition (from \eqref{eq:basis}):
+\begin{itemize}
+  \item \textbf{Buying the basis} (``long basis'') means \emph{long the cash bond} and \emph{short the futures}. This position profits if the basis widens (cash outperforms futures) and from positive carry.
+  \item \textbf{Selling the basis} (``short basis'') is \emph{short the cash bond} and \emph{long the futures}. This profits if the basis narrows and from negative carry (if financed profitably).
+\end{itemize}
+
+Sources of profit in a basis trade are therefore:
+\begin{enumerate}
+  \item Changes in the basis itself (convergence or divergence), and
+  \item Carry earned (coupon minus funding costs) while the trade is held.
+\end{enumerate}
+
+\subsection{Numerical example (illustrative)}
+This example reproduces and corrects the original numerical illustration. It is intended to show the P\&L decomposition; it does not claim that the hedging ratio used is DV01-neutral (the example is \emph{illustrative} rather than an optimal hedge construction).
+
+\paragraph{Market data (example)}
+\begin{itemize}
+  \item Trade date: 05/04/2001 (settlement 06/04/2001).
+  \item Futures (June 01) trade: \(F_{0}=103\text{-}30/32 = 103.9375\).
+  \item Cash bond: \(7\tfrac{1}{2}\%\) coupon, maturity 11/16 (quoted): \(P_{0}=120\text{-}20/32=120.625\) (clean price per \$100 of par).
+  \item Conversion factor: \(CF=1.1484\).
+  \item Repo rate for the bond (term repo used in financing) \(=4.5\%\) annually.
+  \item Trade size: buy \$10{,}000{,}000 par of the cash bond and sell 115 June 01 futures contracts (this choice of 115 contracts is the original example — it produces a near hedge but is not precisely DV01-matched; we keep it for pedagogical transparency).
+\end{itemize}
+
+\paragraph{Unwind (example)}
+\begin{itemize}
+  \item Unwind date: 19/04/2001 (settlement 20/04/2001).
+  \item Cash bond sold at \(P_{1}=116\text{-}21/32 = 116.65625\) per \$100.
+  \item Futures bought back at \(F_{1}=100\text{-}16/32 = 100.5\).
+\end{itemize}
+
+\paragraph{Calculations}
+We compute all quantities on a \$100 basis first and then scale to the positions used in the example.
+
+\begin{align*}
+\text{Change in bond price (per \$100)} &= 120.625 - 116.65625 = 3.96875 = \frac{127}{32},\\
+\text{Bond cost (initial, dirty approximated by clean here)} &= 120.625 \times \frac{10{,}000{,}000}{100} = 12{,}062{,}500,\\
+\text{Bond proceeds on sale} &= 116.65625 \times \frac{10{,}000{,}000}{100} = 11{,}665{,}625,\\
+\text{Bond P\&L (loss)} &= 11{,}665{,}625 - 12{,}062{,}500 = -396{,}875.
+\end{align*}
+
+For the futures leg: one contract represents \$100{,}000 of par; the dollar value of a 1/32 price move per contract is
+\[
+\frac{1}{32}\;\text{per}\;100 \times \frac{100{,}000}{100} = 31.25.
+\]
+The futures price fell from \(103\tfrac{30}{32}\) to \(100\tfrac{16}{32}\), a move of
+\(\;103.9375 - 100.5 = 3.4375 = \dfrac{110}{32}\;\) points (i.e. 110 ticks of \(1/32\)). The futures P\&L for 115 contracts is therefore
+\[
+\text{Futures Gain} = \frac{110}{32}\times 31.25 \times 115 = 395{,}312.50.
+\]
+
+Coupon and financing items (numbers directly taken from the original example):
+\begin{itemize}
+  \item Coupon interest earned (pro rata):
+  \[
+  \text{Coupon} = 10{,}000{,}000\times\frac{0.075}{2}\times\frac{14}{181}=29{,}005.52.
+  \]
+  \item Repo interest paid (financing the bond purchase; original used a dirty price principal):
+  \[
+  \text{Repo Interest} = 12{,}356{,}700 \times 0.045 \times \frac{14}{360}=21{,}624.23.
+  \]
+\end{itemize}
+
+Combining the four P\&L components:
+\begin{align*}
+\text{Net P\&L} &= (-396{,}875) + 395{,}312.50 + 29{,}005.52 - 21{,}624.23\\
+&\approx 5{,}818.80.
+\end{align*}
+
+\paragraph{Interpretation}
+Although the basis tightened (the bond lost relative to the futures position), positive carry (coupon net of repo) more than offset the loss in the basis for this particular set of trades and quantities. Note: the hedging ratio (115 futures vs. \$10{,}000{,}000 cash) was not chosen to be DV01-neutral in this illustrative calculation. In practice a DV01-matched hedge would be constructed using the methods in Section~\ref{sec:hedging} below.
+
+\section{What Drives the Basis}
+\label{sec:drivers}
+Historically the basis tends to exceed carry — i.e. holders of long basis positions historically have often been unable to earn enough carry to offset expected changes in the basis. Much of this behaviour is explained by the future shorts' strategic delivery options (quality, timing, switch, end-of-month and wild card options). The long basis trader buys the basis not only for the carry but for the right to participate in the delivery options.
+
+\subsection{Search for the Cheapest-to-Deliver (CTD)}
+Any U.S. Treasury issue is eligible for delivery into a given futures contract if it satisfies the exchange's maturity window as of the first day of the delivery month (for example, Treasury bond futures typically require at least a stated remaining maturity). The \textbf{cheapest-to-deliver (CTD)} is the bond which maximizes the net return to buying the bond, carrying to delivery, and delivering it against the futures contract. A robust practical rule is:
+\begin{quote}
+The CTD is usually the bond with the highest implied repo rate (IRR), or equivalently the least negative spread between IRR and the bond's obtainable repo financing rate (taking repo specials into account).
+\end{quote}
+
+The IRR already reflects the embedded delivery options (that reduce the short's return), so comparing IRR with observable term repo rates gives an implied "option cost" for each bond. Where repo special financing exists, the relationship must be adjusted — a bond that can be financed at a special (cheap) repo may be more attractive to the short than its IRR alone implies.
+
+\subsection{Best Time to Deliver}
+If the yield curve is positively sloped (long yields above short yields), carry for long bonds is positive and shorts will generally prefer to delay delivery (to harvest carry). Conversely, with a negatively sloped yield curve carry can be negative and early delivery may be advantageous. In all cases the short balances carry against the time value of delivery options (the value of delaying delivery because the CTD may change), so the optimal delivery timing is the solution to a small option exercise problem.
+
+\subsection{Delivery Process and Short's Strategic Options}
+The delivery process typically involves a sequence of events (names vary by exchange):
+\begin{description}[nosep]
+  \item[Tender (or Notice Intent) Day:] the short indicates intent to deliver into the contract.
+  \item[Notice Day:] the short specifies the particular bond to be delivered (which triggers the invoice calculation and initiates settlement mechanics).
+  \item[Delivery Day:] the long pays the invoice price and receives the bond. Because late delivery carries heavy penalties, market participants who expect to deliver usually obtain physical possession a couple of business days before delivery.
+\end{description}
+
+Trading in a contract often stops before the beginning of the delivery month; the exchange rulebook defines the exact day trading stops and the authorised delivery window (for Treasury bond futures this is commonly a period of several business days at month end). The existence of the weeklong delivery window after trading stops is the source of the so-called \emph{end-of-month option}.
+
+\subsubsection{The Switch Option}
+The short can change which bond is delivered as market yields and spreads move prior to delivery. Consequently:
+\begin{itemize}
+  \item If yields rise uniformly, long-duration issues (high sensitivity) generally become more attractive to the short after CF adjustment and may become the CTD.
+  \item If yields fall, low-duration bonds may become CTD.
+\end{itemize}
+Intuitively the fixed CF assumes a notional yield; when market yields deviate the correction is larger for bonds with greater duration — hence the CTD can switch with level changes and with relative spread moves among deliverables.
+
+\paragraph{Parallel shifts vs spread changes}
+When yields move in parallel the CTD selection is primarily a function of relative durations. When yield spreads among candidate bonds change, that directly affects relative converted prices and hence the CTD.
+
+\paragraph{Anticipated new issues}
+A new on-the-run issue that becomes eligible before the first delivery day can alter the CTD set. New issues tend to trade at a small liquidity premium (lower yield), which may make them unattractive to the short; typically the ``new-issue option'' is small relative to other options.
+
+\subsubsection{End-of-Month Option}
+Once trading in the expiring contract has closed the final settlement price is fixed for invoice calculation, but cash bond prices can continue to move during the delivery window (the days in which delivery can actually occur). The short's right to choose the delivery date within that window — and to take advantage of any post-close cash moves — is the \textbf{end-of-month option}. This option raises the value of holding a short futures position relative to a forward.
+
+After expiry, each open short futures position corresponds to the obligation to deliver \$100{,}000 par of bonds (the contract's notional) irrespective of the bonds' subsequent market price; hence when hedging an existing cash holding the hedge ratio effectively becomes one-to-one (not scaled by CF) as one moves into a delivery short position that will be exercised.
+
+\subsubsection{Timing Options and the Wild Card}
+The short chooses not only which bond to deliver but also when to deliver (some shorts prefer early delivery to avoid negative carry; others defer to keep optionality). The \textbf{wild card} arises when a large adverse (for longs) move in the cash market occurs after futures trading has closed for the day. If the cash price moves sufficiently so that delivering early yields a material profit relative to keeping the basis position, the short may deliver during the delivery month to lock in that gain.
+
+A convenient break-even relation for a simple wild-card decision (adapted from the classic literature) can be written as
+\[
+(CF - 1)\times (CF\times F - P) = B,
+\]
+where \(F\) is the closing futures settlement price, \(P\) is the aftermarket cash price of the candidate bond and \(B\) is the expected basis when cash trading resumes. The formula equates the incremental benefit from substituting a different deliverable with the expected basis position surrendered by delivering early.
+
+\section{The Option-Adjusted basis}
+\label{sec:oab}
+\subsection{Option Structures}
+From the trade until the last trading day, the short enjoys the switch option that are driven by changes in the curve. From the last trading day to the delivery day, the short enjoys the end-of-month option. In addition, the timing options are in play from the first notice day until the end of the delivery month. In practice, the timing options tend to be small.
+
+\subsection{Valuing the switch and end-of-month options}
+Producing the value of the options would require the following:
+\begin{itemize}
+  \item Produce the probability distribution of the yield curve levels/slope.
+  \item For each scenario, identify the CTD, value the end-of-month options.
+\end{itemize}
+Then futures prices for each scenario are:
+\[
+\text{Futures}_{\text{scenario}} = \frac{\text{CTD Price} - \text{CTD Carry} - \text{EOM option}}{\text{CTD CF}}.
+\]
+Then, we can calculate the expected value of the issue's basis net of carry values.
+
+\subsection{The value of Early Delivery}
+To value the short's option to deliver early, we first need a rule for deciding when to deliver early. Consider the situation where carry is negative. The short can avoid negative carry by delivering early. This would surrender the value of any remaining switch and end-of-month options.
+
+If yields and yield spreads are not volatile, the value of the options would be less than the negative carry. The resulting future price \(F_{LV}\) would be the forward price subtracting the remaining options value. Hence if
+\[
+\text{CTD CF} \times F_{LV} - \text{CTD Spot Price} > 0
+\]
+then the short would realize an immediate profit.
+
+\subsection{Volatility and Distribution of yield levels}
+We begin with implied volatility taken from the market for options on futures. As a first approximation,
+\[
+\sigma_y = (\text{yield} \times \text{Modified Duration})\sigma_p,
+\]
+though more careful mappings use the relationship below.
+
+Consider a coupon bond with maturity \(T\) years, paying \(m\) coupons per year, so the total number of periods is \(n = mT\). 
+Let the yield-to-maturity (compounded \(m\) times per year) be \(y\), and the per-period discount rate be \(r = y/m\). 
+The price is then
+\[
+P(y) = \sum_{k=1}^{n} \frac{CF_k}{(1+r)^k}.
+\]
+
+Differentiating with respect to \(y\) gives
+\[
+\frac{\partial P}{\partial y} 
+= \frac{\partial P}{\partial r}\frac{\partial r}{\partial y}
+= -\frac{1}{m}\sum_{k=1}^{n} \frac{k\,CF_k}{(1+r)^{k+1}}.
+\]
+Rearranging,
+\[
+\frac{\partial P}{\partial y}
+= -\frac{1}{m(1+r)}\sum_{k=1}^{n} \frac{k\,CF_k}{(1+r)^k}.
+\]
+
+The Macaulay duration in years is
+\[
+D_{\text{Mac}} = \frac{1}{P}\sum_{k=1}^{n}\frac{(k/m)\,CF_k}{(1+r)^k},
+\]
+so that
+\[
+\sum_{k=1}^{n}\frac{k\,CF_k}{(1+r)^k} = mP D_{\text{Mac}}.
+\]
+Hence
+\[
+\frac{\partial P}{\partial y} = -\frac{P D_{\text{Mac}}}{1+r},
+\]
+and therefore
+\[
+D_{\text{mod}} = -\frac{1}{P}\frac{\partial P}{\partial y} 
+= \frac{D_{\text{Mac}}}{1+y/m}.
+\]
+
+Finally, multiplying both sides by \(dy\),
+\[
+\frac{dP}{P} = -D_{\text{mod}}\,dy,
+\]
+which for small yield changes leads to the familiar approximation
+\[
+\frac{\Delta P}{P} \approx -D_{\text{mod}}\,\Delta y.
+\]
+The implied vol from the option market is not ideal since the options expire roughly a month before the futures do.
+
+\subsection{If the Basis is Cheap, Futures are Rich}
+In practice, the basis net of carry can be less than the theoretical optional value for all issues in the deliverable set. The market price that shorts are paying for the embedded delivery option is less than the theoretical value. Hence, the option-adjusted basis (difference between basis net of carry and the theoretical value of options) is negative. The flip side of a cheap basis is a rich future price.
+
+\section{Approaches to Hedging}
+\label{sec:hedging}
+There are generally two rules of thumb for determining hedge ratios. Both rule of thumb are based on the assumption that the future price is driven by the CTD.
+
+\paragraph{Rule of Thumb 1}
+The BPV (approx \(P \times D_{\text{mod}} \times 0.0001\) — absolute change in price for 1bp change in yield) of a future contract is
+\[
+BPV_{\text{fut}} \approx \frac{BPV_{\text{CTD}}}{CF_{\text{CTD}}}.
+\]
+
+\paragraph{Rule of Thumb 2}
+We also have
+\[
+BPV_{\text{Fut}} = \frac{BPV_{\text{CTD}}}{CF_{\text{CTD}}},
+\qquad
+\frac{BPV_{\text{Fut}}}{P_{\text{Fut}}} = \frac{BPV_{\text{CTD}}}{CF_{\text{CTD}}}\frac{1}{P_{\text{Fut}}}.
+\]
+At expiration,
+\[
+P_{\text{Fut}} \approx \frac{CTD}{CF_{\text{CTD}}}
+\]
+except for a small amount of carry and the value of remaining EOM options. Hence,
+\[
+\frac{BPV_{\text{Fut}}}{P_{\text{Fut}}} = \frac{BPV_{\text{CTD}}}{CTD},
+\qquad
+D^{\text{Fut}}_{\text{mod}} = D^{\text{CTD}}_{\text{mod}}.
+\]
+
+As an example, suppose we want to hedge \$10m face on par amount of the 5\% of 2/15/11:
+\begin{itemize}
+  \item Market price: \(100\text{-}17/32\).
+  \item Full price including accrued interest (dirty price): 101.222.
+  \item Modified Duration: 7.67.
+  \item DV01 (BPV) per \$100,000 face amount: 77.624.
+\end{itemize}
+To hedge it, we use the 10y Treasury note futures:
+\begin{itemize}
+  \item Future Price: \(106\text{-}08/32\).
+  \item CTD Factor: 0.9734.
+  \item CTD Modified Duration: 5.65.
+  \item CTD DV01 (BPV) per \$100,000 face amount: 59.14.
+\end{itemize}
+
+Then, the future DV01 is
+\[
+\frac{BPV_{\text{CTD}}}{CF_{\text{CTD}}} \approx \frac{59.14}{0.9734} = 60.76.
+\]
+
+Using the first rule of thumb, the hedging ratio is
+\[
+\frac{BPV_{\text{Portfolio}}}{BPV_{\text{Fut}}} = \frac{7762.4}{60.76} \approx 127.8.
+\]
+
+Now using the second rule of thumb, the hedge ratio is
+\[
+\frac{P_{\text{portfolio}}\times D_{\text{portfolio}}}{P_{\text{Fut}}\times D_{\text{Fut}}} = \frac{101.22 \times 7.67}{106.25 \times 5.65} \approx 126.9.
+\]
+
+The second rule of thumb produces a smaller hedge ratio because it misapplies the modified duration of the CTD. Modified duration should be applied to bond \emph{dirty price} while the future at expiration would be the bond's converted market or net price.
+
+It's worth highlighting that the rules of thumb ignore both changes in carry and the value of the short's delivery option value.
+
+\subsection{Spot and Repo DV01}
+When using futures to hedge, there are two sources of interest rate risk: changes in spot bond yields or changes in term repo rates.
+
+For example, consider a CTD with:
+\begin{itemize}
+  \item Settlement date on 06/04,
+  \item Coupon date on 15/05 (39 days from settlement date),
+  \item Delivery date on 29/06 (45 days from coupon date),
+  \item Spot clean price \(S\): 124.625,
+  \item Dirty price: 127.6160,
+  \item Repo rate \(R\): 4.54\%,
+  \item Annual Coupon rate \(C\).
+\end{itemize}
+Then the forward price \(F\) can be written (discretely) as:
+\[
+F = (S+AI)\left(1+R\frac{39}{360}\right)\left(1+R\frac{45}{360}\right) - \frac{C}{2}\left(1+R\frac{45}{360}\right),
+\]
+which accounts for financing the dirty purchase through the interim coupon and to delivery.
+
+To understand sensitivities, differentiate \(F\) with respect to the spot yield \(y_S\). Using the chain rule:
+\[
+\frac{dF}{dy_S} = \frac{dF}{dS}\frac{dS}{dy_S} \approx \left[1+R\frac{84}{360}\right]\frac{dS}{dy_S},
+\]
+ignoring terms of order \(R^2\). Hence, a rise in spot yield would cause the forward price to fall (since \(\frac{dS}{dy_S} < 0\)). We also have
+\[
+\frac{dF}{dR} = (S+AI)\left(\frac{84}{360} + 2R\frac{39}{360}\frac{45}{360}\right) - \frac{C}{2}\frac{45}{360}.
+\]
+An increase in term repo rate makes the forward price rise (higher financing cost embedded in the forward).
+
+Even though repo rates and spot yields will tend to rise and fall together, the two rates respond to different short-term forces. Data often show that over short horizons (e.g. one week) there is little correlation between medium/long yields and term repo rates. Hence the hedger faces nearly two independent sources of risk: spot yield movements and term financing (``stub'') risk.
+
+Rewriting the discrete no-arbitrage relation:
+\[
+F + \sum_{t_i<T} C_i(1+r(T-t_i)) = S^{d}(1+rT),
+\]
+a complete hedge for a spot bond will include both futures (to cover changes in spot yields) and a term money market position for the stub period (to cover changes in repo rates). The 84-day repo period is sometimes referred to as the "stub" period and changes in repo rate are considered "stub" risk. If money-market conditions are stable, the hedger might not hedge this risk. The futures solutions to offsetting stub risk sometimes involve hedges with forward/futures positions in other instruments.
+
+\subsection{Option-Adjusted DV01s}
+The analysis of the cheapest-to-deliver (CTD) bond often involves two curves:
+\begin{itemize}
+  \item \textbf{Theoretical Futures Price Curve:} the no-arbitrage futures price implied by carry arguments,
+  \[
+    F(y) = \frac{P(y)\,e^{rT}}{CF},
+  \]
+  where \(P(y)\) is the bond's price as a function of yield \(y\), \(r\) is the repo rate, \(T\) is the time to delivery, and \(CF\) is the conversion factor. This curve shows how the fair futures price evolves with yield changes, also taking into account the option.
+  \item \textbf{Converted Price Curve:} for each deliverable bond, the exchange defines a converted price as
+  \[
+    C(y) = \frac{P(y)}{CF}.
+  \]
+  This expresses the bond's cash-market price in futures terms, independent of financing assumptions.
+\end{itemize}
+
+The CTD is identified by comparing these two curves. Intuitively, the CTD is the bond whose converted price curve lies lowest relative to the theoretical futures price curve at current yields, i.e. it is the cheapest way for the short futures position to fulfil delivery.
+
+An important subtlety arises when examining the \emph{slopes} of these curves. The slope of the theoretical futures price curve reflects both bond sensitivity and financing carry, while the slope of the converted price curve reflects only the bond's price-yield sensitivity. When yields are below the crossover yield, the slope of the theoretical futures price curve may exceed the slope of the converted price curve for a low-duration bond (which is then the CTD). In this case, the DV01 of the futures contract—often approximated by scaling the CTD bond's DV01 by its conversion factor—can underestimate the true futures DV01.
+
+Therefore, using the converted price curve, the hedger is either overhedged at low yields or underhedged at high yields. Further, the adjustments are abrupt at the point where yields pass through the crossover point. In contrast, the theoretical futures price curve reflects the changing value of the short's delivery options, and as a result, produces a gradual change in the futures DV01.
+
+\subsection{Yield Betas}
+The tendency of the yield curve to flatten and steepen as yields change creates a challenge for a hedger who uses bond futures to hedge a long bond position. The CTD maturity may be very different from the hedged bond. The naive approach is to use the hedge ratio \(\dfrac{DV01_{i}}{DV01_{CTD}}\) where \(i\) is the hedged bond. However, this will break down if yields don't move in parallel. The standard solution is to use yield betas: regress changes in the bond's yield on a benchmark yield and use the regression coefficient to adjust the hedge ratio.
+
+\subsection{PnL of a hedge}
+The P\&L on a cash bond has three parts: price change, coupon income and financing costs. In contrast, the P\&L on a futures contract has only one part: price change (marked to market). To evaluate the performance of a hedge, we need to consider the followings.
+
+\paragraph{Delivery Option Values} A hedger who is long bonds and short futures that is DV01-neutral resembles a long volatility position. By selling futures, the hedger gives up basis net of carry in exchange for a futures convexity that is less than that of the bond he or she is hedging with. Delivery options reduce the convexity of the futures since the short can always choose to deliver the cheapest one.
+
+\paragraph{Changes in Yield Spreads} If the hedger is long anything other than the CTD, unexpected changes in yield spreads can produce P\&L. Using yield betas would help to minimise this impact, but unexpected changes in yield betas would still cause P\&L.
+
+\paragraph{Changes in the Stub Repo Rate} Increase in term repo rates will tend to hurt someone who is short futures. Recall from previous section that an increase in repo rate makes the forward price raise.
+
+\section{Trading the Basis}
+\label{sec:trading}
+
+\subsection{Selling the Basis when it's expensive}
+There can be regular opportunities to profit from selling the 10-year basis since the 10-year futures are widely used as a hedge by mortgage investors; the contract trades below fair value more often than not. This seems especially true when the "on-the-run" 10-year Treasury trades special in the repo market and hedgers find 10-year cash Treasuries expensive to short (earn lower repo rate).
+
+Selling the basis of the CTD is similar to selling the short's strategic delivery options. If the bond remains the CTD until expiration, the strategic delivery option will expire out of the money and be worthless. The P\&L will be basically basis net of carry. However, if the CTD changes, the strategic delivery options go in the money, leading to widening basis and negative P\&L.
+
+Selling the basis of a non-cheap bond differs from selling the CTD since the basis net of carry of a non-cheap bond is expected to converge to a positive number rather than to zero. The basis of a non-cheap bond also depends much more on the spread between its yield and CTD. Traders might prefer selling bases of non-cheap bonds since it can diversify risk and reduce exposures to spread changes.
+
+\subsection{Buying the basis when it's cheap}
+A long basis position is similar to a long option position. The downside is limited to basis net of carry, and the upside is unlimited with yield volatility. The high yield volatility at the long end has made it especially attractive to own bond bases at the wings of the deliverable bond curve whenever they have become close to being CTD.
+
+\subsection{Trading the basis of OTR bonds}
+The OTR basis hold two advantages:
+\begin{itemize}
+  \item Its basis is very liquid and typically more liquid than CTD
+  \item New issue effect causes a richening of the note after it's auctioned and a cheaping of the note when it's replaced.
+\end{itemize}
+After issuance, it's profitable to buy the OTR basis when it's likely to richen or sell the OTR basis later on. However, since OTR issues usually trade special in the repo market, selling the OTR basis is a negative carry trade.
+
+\subsection{Basis Trading When The CTD is in Short Supply}
+On rare occasions, the lack of available supply has produced delivery squeezes. This may cause negative CTD net bases. Although this may appear to create arbitrage it actually reflects the potential costs of a delivery failure. Any arbitrageur that buys the CTD basis at a price below carry (negative net basis) locks in a riskless profit only if it can deliver the CTD.
+
+\subsection{Trading the Calendar Spread}
+The first and most obvious way to take advantage of a mispricing of the calendar spreads is to trade the spreads outright. However, the calendar spread is subject to considerable yield curve risk, and as a result, highly variable for reasons other than changes in mis-pricings. There is nothing that forces a calendar spread to converge to fair value at expiration.
+
+A second and potentially more fruitful approach would be to use mispriced calendar spreads to establish richer or cheaper basis positions in deferred contract month. For example, if the calendar spread is rich, a basis trader can sell the spread (sell the lead contract and buy the deferred contract) and deliver into the lead contract at expiration. The trade now has a short position in the note and a long position in the deferred future contract. The return is higher by the amount of the calendar spread mispricing.
+
+A third approach is valuable for hedgers who want to roll futures positions from one contract month to the next. If the spread is cheap, buying the spread is a good way to roll a short position from a nearby contract month to a more distant contract month.
+
+\subsection{Practical Considerations in Trading the Basis}
+\paragraph{Repo Specials}
+Anyone who is long the basis of a bond that is "on special" faces the possibility that the bond will return to the general collateral pool. Its repo rate will rise and the bond's basis will fall.
+
+\paragraph{Term Financing versus Overnight Financing}
+For a basis trade, the cash bond can be financed with either a term repo or a string of overnight repos. With a positively sloped yield curve, a string of overnight repos can be cheaper than financing with a term repo. Also, a position financed overnight is easier to unwind than a position financed with a term repo.
+The chief drawback of financing a position overnight is the shift in the slope of the yield curve. For a long basis position, an increase in the overnight repo rate will increase the cost of carry and reduce P\&L.
+
+\paragraph{Short Squeezes}
+Trading the basis from the short side (selling bonds short and buying futures) involves several risks that must be considered. Here you enter a reverse repo borrowing the bond from another counterparty and earn the repo rate. The short seller must pay the coupon interest and this expense is often greater than repo rate earned, and leads to negative carry. Furthermore, the short seller is obligated to eventually buy back the same issue that was sold short. This can become difficult with illiquid issues.
+
+\paragraph{Taking a Basis Trade into the Delivery Month}
+Some basis traders are better suited than others to make or take delivery. Those who would find delivery costly have two alternatives:
+\begin{itemize}
+  \item Unwinding the trade with offsetting transactions, or
+  \item Rolling the futures leg of the trade into the next contract month. The only thing that can complicate an otherwise simple trade is that the conversion factors are different for each contract month.
+\end{itemize}
+
+\section{Volatility arbitrage in the Treasury Bond Basis}
+\label{sec:volarb}
+The value of a bond's basis and bond options are driven by the level and volatility of bond prices. The prices paid for options on yield volatility in the two markets diverge from time to time. Our approach to determine whether yield volatility is trading at the same price is to value the strategic delivery options in bond futures directly. To do this, we begin with implied volatility in the market options on bond futures. If delivery options embedded in the futures contract are trading at a level consistent with the level of implied volatility in the market for options, each bond's Option adjusted basis (OAB) should be 0. If a bond's OAB were greater than zero, we would conclude that the basis is rich (futures are cheap). Any significant mispricing is a signal that there may be an opportunity to improve the return on a volatility trade or to arbitrage the difference between the two markets. For example, a large negative OAB indicates that the bond basis is paying a lower price for volatility than the bond options market. If so, any trade looking to take a long position in bond volatility should buy bond basis rather than bond option. If mispricing is large enough, an arbitrageur could buy cheap bond volatility in one market and sell in another.
+
+\section{Nine Eras of the Bond Basis}
+\label{sec:eras}
+\subsection{First Era: Cash and Carry 1977--1978}
+Yields were low and stable, and the yield curve was positively sloped. It paid to buy bonds and deliver them against the futures with positive carry.
+
+\subsection{Second Era: Negative Yield Curve 1979--1981}
+The yield curve slope turned negative leading to negative carry and hence, initially earlier delivery. However, as yield slope became even more negative, deliveries started taking place later. The explanation is rooted in the "wild card" option.
+
+\subsection{Third Era: Positive Carry 1982--1984}
+With the return of positive carry, there was no longer a clear cost incentive to deliver bonds early. Dealers stayed long the basis until the middle of this period so that they could take advantage of the future shorts' wild card option. From the middle of 1983, as yields stabilized, the volatility needed for wild card plays disappeared.
+
+\subsection{Fourth Era: The Golden Age of Yield Enhancement 1985--1989}
+During this period, yields were generally falling, the yield curve was comparatively flat but still positively sloped and yields were fairly volatile. Around 1985, a number of events conspired to cause great demand for long-dated Treasury bonds:
+\begin{itemize}
+  \item The bull market in bonds increased demand for long-dated zero coupon exposure.
+  \item The U.S. Treasury concentrated on fixed maturity 30-year bonds.
+  \item Overseas flows (e.g. Japan) invested in long-dated Treasuries.
+\end{itemize}
+The slope of the long end of the yield curve became sharply negative. Long durations became extremely expensive, and dealers shorted the cash bonds and hedged by buying future contracts (shorting the basis).
+
+\subsection{Fifth Era: Volatility Arbitrage}
+The positive OAB before 1989 indicates that bond basis was paying a higher price for volatility than option market, hence futures were cheap. By early 1990, the OAB settled around zero and futures were more fairly priced.
+
+\subsection{Sixth Era: The Death of Gamma 1991--1993}
+Large changes in yield spreads robbed the basis of its option value since the switch option value declined.
+
+\subsection{Seventh Era: The Callables' Last Hurrah 1993--1994}
+Callable securities in the deliverable set temporarily dominated CTD selection and reduced option-adjusted duration.
+
+\subsection{Eighth Era: Long Dry Spell 1995--1999}
+A dominant CTD caused the futures to behave more like forwards.
+
+\subsection{Ninth Era: 6\% factors and the rebirth of bond basis trading}
+When exchange convention for CF changed (e.g. to 6\%), CTD turnover rose and basis trading revived.
+
+\section{Application for Portfolio Managers}
+\label{sec:applications}
+\subsection{Hedging and Asset Allocation}
+The most effective way to eliminate the risk of a bond in your portfolio is to sell it to someone else; futures are an imperfect substitute but useful when transaction costs, taxes, or regulatory reasons make an outright sale undesirable.
+
+\paragraph{Low Transaction Costs} Except for OTR and recently issued securities, trading futures usually has lower explicit trading costs than trading bonds.
+
+\paragraph{Leaving the Core Portfolio Intact} Selling futures allows you to keep the portfolio structure intact.
+
+\paragraph{Built-In Financing} Futures implicitly incorporate financing costs; however, stub/repo risk remains relevant.
+
+\paragraph{Controlling Yield Curve Exposure} Use combinations of futures across maturities.
+
+\subsection{Synthetic Assets}
+To create a synthetic bond:
+\begin{enumerate}
+  \item Sell the underlying bond and invest proceeds in a short-term money market instrument.
+  \item Take a long futures position sized to replicate the bond's price exposure (DV01 matched).
+\end{enumerate}
+Over the past several years, the best opportunities for yield enhancement in the US have centered on 10y
+note futures. Because many participants in the mortgage market actively short 10y note future to hedge
+their risks, these have tended to trade cheap realtive to cash. It’s worth noting that PnL on long bond
+positions are unrealized while PnL on futures are marked to market daily.
+\end{document}

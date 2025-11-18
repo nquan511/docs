@@ -1,0 +1,92 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\geometry{margin=1in}
+
+\title{P vs Q Measures and Yield Curve Modeling: Practical Summary}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Big Picture: P vs Q}
+In pricing (risk--neutral, $\mathbb{Q}$), models enforce no--arbitrage and treat primitive rates (short rate $r(t)$ or instantaneous forwards $f(t,T)$) as states so that discounted tradables are martingales. In real--world forecasting (physical, $\mathbb{P}$), desks typically model observed yields at fixed tenors or a low--dimensional factorization (level/slope/curvature), focusing on prediction, risk premia, and communication.
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Primitive vs overlapping:} Forwards are non--overlapping primitives; yields and par swaps are overlapping averages of forwards.
+  \item \textbf{Implication:} Directly splining par rates/yields can create shape artifacts; modeling primitives keeps static relations clean under $\mathbb{Q}$.
+\end{itemize}
+
+\section{Static Curve Construction for Linear Desks}
+For linear products, the practical notion of ``arbitrage--free'' is an internally consistent discount curve $D(T)$ that reprices inputs and is well--behaved.
+
+\subsection{Recommended workflow}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Bootstrap} discount factors $D(T_i)$ on all cashflow dates from liquid quotes (deposits/FRAs/futures/swaps).
+  \item \textbf{Interpolate the right object}: use log--linear on discounts (linear in $\ln D(T)$) or a shape--preserving method (e.g., monotone--convex) between nodes.
+  \item \textbf{Reprice inputs} exactly (or within tight tolerances); keep $D(0)=1$ and $D(T)>0$.
+  \item \textbf{Sanity checks}: implied simple/inst. forwards are stable (no spurious oscillations from interpolation).
+\end{enumerate}
+
+\subsection{Notes}
+\begin{itemize}[leftmargin=*]
+  \item Log--linear on $\ln D(T)$ implies piecewise--constant instantaneous forwards $f(T) = -\frac{d}{dT}\ln D(T)$ on each interval between nodes; no spline overshoot.
+  \item Non--increasing $D(T)$ (non--negative forwards) is a \emph{policy} choice, not a mathematical necessity in regimes that admit negative rates.
+\end{itemize}
+
+\section{Dynamic Consistency and Why It Matters}
+Fitting today's curve is not enough when hedging options or path--dependent payoffs. An arbitrage--free term--structure \emph{evolution} provides:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Time consistency}: prices evolve as discounted $\mathbb{Q}$ expectations; no systematic model P\&L from ``time passing''.
+  \item \textbf{Cross--tenor coherence}: forwards across maturities move jointly so that FRA/swap replications track.
+  \item \textbf{Hedge validity}: Greeks/hedges depend on volatilities and correlations across tenors.
+\end{itemize}
+
+In Heath--Jarrow--Morton (HJM) form, if the instantaneous forward has volatility $\sigma(t,T)$, the drift is pinned by no--arbitrage:
+\begin{equation}
+  \mu_f(t,T) \,=\, \sigma(t,T) \int_t^T \sigma(t,u)\,du.\label{eq:hjm}
+\end{equation}
+Violating these ties by shocking tenors ad hoc can create roll/calendar arbitrage and unstable hedges.
+
+\section{Arbitrage--Free Factor Models}
+Research and practice favor low--dimensional, arbitrage--free factor models that:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Preserve day--1 fit}: include a deterministic shift so $P(0,T)=D(T)$ from the bootstrapped curve.
+  \item \textbf{Impose no--arb dynamics}: HJM/LMM/affine families ensure drift restrictions like \eqref{eq:hjm}.
+  \item \textbf{Provide joint dynamics}: a small state (level/slope/curvature) drives vol/correlation across tenors.
+  \item \textbf{Support P--Q mapping}: link $\mathbb{Q}$ to $\mathbb{P}$ via market price of risk for forecasting and risk.
+\end{itemize}
+
+Examples: arbitrage--free Nelson--Siegel (AFNS), affine term structure (Dai--Singleton), HJM/LMM with the initial forward curve taken from the static bootstrap.
+
+\section{``Curve + Vols'' vs Factor Dynamics}
+Calibrating vols per tenor on top of a static curve can fit cap/swaption surfaces, but without a factorization you lack a unique, coherent joint law. An arbitrage--free factor model is superior when you need:
+\begin{itemize}[leftmargin=*]
+  \item Stable cross--tenor hedges and risk attribution.
+  \item Pricing/hedging of multi--period or path--dependent products (Bermudans, callable bonds, CMS).
+  \item Smooth interpolation/extrapolation across sparse option quotes.
+\end{itemize}
+You still bootstrap the curve from linear instruments exactly; the factor model adds the dynamically consistent layer that matches options while preserving the curve.
+
+\section{Key Identities (for intuition)}
+\begin{align}
+  y(t,T) &= \frac{1}{T-t} \int_t^T f(t,u)\,du \quad \text{(yield is an average of forwards)} \\
+  r(t) &= f(t,t) \quad \text{(short rate)} \\
+  \text{FRA}(T_i,T_{i+1}) &= \frac{D(T_i)}{D(T_{i+1})}-1\Bigg/\Delta_{i,i+1} \quad \text{(simple forward)} 
+\end{align}
+Mapping $\mathbb{Q}$ to $\mathbb{P}$ is often summarized heuristically as $\mu_{\mathbb{P}} = \mu_{\mathbb{Q}} + \Sigma\,\lambda$, where $\lambda$ is the (state--dependent) market price of risk and $\Sigma$ are vol loadings.
+
+\section{Practical Workflow Summary}
+\begin{enumerate}[leftmargin=*]
+  \item Build a clean static curve: bootstrap $D(T)$; interpolate in $\ln D(T)$ or with monotone--convex; reprice inputs; sanity check forwards.
+  \item Choose an arbitrage--free factor family (AFNS/HJM/LMM/affine) that preserves $D(T)$ at $t=0$.
+  \item Calibrate vol parameters to options; monitor fit errors and surface no--arb (calendar/strike convexity).
+  \item If needed, estimate a $\mathbb{P}$ overlay (market price of risk) for forecasting and stress.
+\end{enumerate}
+
+\end{document}

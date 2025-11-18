@@ -1,0 +1,946 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\title{Mathematical Optimization}
+\author{}
+\date{}
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Basic Concepts}
+
+\subsection{Gradient Matrix / Vector}
+For a scalar-valued function $f: \mathbb{R}^n \rightarrow \mathbb{R}$, the gradient is a vector (often referred to as a matrix in a more general sense when considering its row or column representation) containing the first partial derivatives.
+\begin{equation}
+    \nabla f(\mathbf{x}) = \begin{pmatrix} \frac{\partial f}{\partial x_1} \\ \frac{\partial f}{\partial x_2} \\ \vdots \\ \frac{\partial f}{\partial x_n} \end{pmatrix}
+\end{equation}
+
+\subsection{Hessian Matrix}
+For a scalar-valued function $f: \mathbb{R}^n \rightarrow \mathbb{R}$, the Hessian matrix, denoted $H(\mathbf{x})$, is a square matrix of second-order partial derivatives. The explicit form is:
+\begin{equation}
+    H(\mathbf{x}) = \begin{pmatrix}
+    \frac{\partial^2 f}{\partial x_1^2} & \frac{\partial^2 f}{\partial x_1 \partial x_2} & \cdots & \frac{\partial^2 f}{\partial x_1 \partial x_n} \\
+    \frac{\partial^2 f}{\partial x_2 \partial x_1} & \frac{\partial^2 f}{\partial x_2^2} & \cdots & \frac{\partial^2 f}{\partial x_2 \partial x_n} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \frac{\partial^2 f}{\partial x_n \partial x_1} & \frac{\partial^2 f}{\partial x_n \partial x_2} & \cdots & \frac{\partial^2 f}{\partial x_n^2}
+    \end{pmatrix}
+\end{equation}
+The entry $H(\mathbf{x})_{ij}$ is given by:
+\begin{equation}
+    H(\mathbf{x})_{ij} = \frac{\partial^2 f}{\partial x_i \partial x_j}
+\end{equation}
+The Hessian matrix is symmetric, i.e., $H(\mathbf{x})_{ij} = H(\mathbf{x})_{ji}$.
+
+\subsection{Jacobian Matrix}
+For a vector-valued function $\mathbf{f}: \mathbb{R}^n \rightarrow \mathbb{R}^m$, where $\mathbf{f}(\mathbf{x}) = (f_1(\mathbf{x}), f_2(\mathbf{x}), \dots, f_m(\mathbf{x}))^T$, the Jacobian matrix, denoted $J(\mathbf{x})$, is an $m \times n$ matrix of the first partial derivatives of each component function. The explicit form is:
+\begin{equation}
+    J(\mathbf{x}) = \begin{pmatrix}
+    \frac{\partial f_1}{\partial x_1} & \frac{\partial f_1}{\partial x_2} & \cdots & \frac{\partial f_1}{\partial x_n} \\
+    \frac{\partial f_2}{\partial x_1} & \frac{\partial f_2}{\partial x_2} & \cdots & \frac{\partial f_2}{\partial x_n} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \frac{\partial f_m}{\partial x_1} & \frac{\partial f_m}{\partial x_2} & \cdots & \frac{\partial f_m}{\partial x_n}
+    \end{pmatrix}
+\end{equation}
+The entry $J(\mathbf{x})_{ij}$ is given by:
+\begin{equation}
+    J(\mathbf{x})_{ij} = \frac{\partial f_i}{\partial x_j}
+\end{equation}
+
+\subsection{Convex Functions}
+A function \( f: \mathbb{R}^n \rightarrow \mathbb{R} \) is called \textbf{convex} if for all \( \mathbf{x}, \mathbf{y} \in \mathbb{R}^n \) and \( \theta \in [0,1] \), we have:
+\[
+f(\theta \mathbf{x} + (1 - \theta)\mathbf{y}) \leq \theta f(\mathbf{x}) + (1 - \theta) f(\mathbf{y})
+\]
+A function is \textbf{strictly convex} if the inequality is strict whenever \( \mathbf{x} \neq \mathbf{y} \) and \( \theta \in (0,1) \). Convex functions have the important property that any local minimum is also a global minimum.
+
+\paragraph{Local Minimum Implies Global Minimum:}
+Let \( f: \mathbb{R}^n \rightarrow \mathbb{R} \) be a convex function defined on a convex domain. Suppose \( \mathbf{x}^* \) is a local minimum, i.e., there exists some neighborhood \( U \) of \( \mathbf{x}^* \) such that for all \( \mathbf{x} \in U \), \( f(\mathbf{x}^*) \leq f(\mathbf{x}) \).
+
+We want to show that \( \mathbf{x}^* \) is a global minimum.
+
+Let \( \mathbf{y} \in \mathbb{R}^n \) be any point in the domain. Define \( \mathbf{x}_\theta = \theta \mathbf{y} + (1 - \theta) \mathbf{x}^* \) for \( \theta \in [0,1] \). Since \( f \) is convex:
+\[
+f(\mathbf{x}_\theta) \leq \theta f(\mathbf{y}) + (1 - \theta) f(\mathbf{x}^*)
+\]
+Now take \( \theta \) small enough so that \( \mathbf{x}_\theta \in U \). Then \( f(\mathbf{x}_\theta) \geq f(\mathbf{x}^*) \) by local minimality. Thus:
+\[
+f(\mathbf{x}^*) \leq f(\mathbf{x}_\theta) \leq \theta f(\mathbf{y}) + (1 - \theta) f(\mathbf{x}^*)
+\]
+Subtracting \( f(\mathbf{x}^*) \) from both sides:
+\[
+0 \leq \theta f(\mathbf{y}) + (1 - \theta) f(\mathbf{x}^*) - f(\mathbf{x}^*) = \theta (f(\mathbf{y}) - f(\mathbf{x}^*))
+\]
+Since \( \theta > 0 \), this implies \( f(\mathbf{y}) \geq f(\mathbf{x}^*) \). Therefore, \( f(\mathbf{x}^*) \leq f(\mathbf{y}) \) for all \( \mathbf{y} \), i.e., \( \mathbf{x}^* \) is a global minimum.
+
+\paragraph{First-Order Condition:}
+Let \( f: \mathbb{R}^n \to \mathbb{R} \) be differentiable. Then \( f \) is convex if and only if:
+\[
+f(\mathbf{y}) \geq f(\mathbf{x}) + \nabla f(\mathbf{x})^\top (\mathbf{y} - \mathbf{x}) \quad \text{for all } \mathbf{x}, \mathbf{y} \in \text{dom}(f)
+\]
+
+
+
+
+\paragraph{Characterization via the Hessian:}
+Let \( f: \mathbb{R}^n \rightarrow \mathbb{R} \) be twice continuously differentiable. Then:
+\begin{itemize}
+    \item \( f \) is convex if and only if the Hessian \( H(\mathbf{x}) \succeq 0 \) (positive semidefinite) for all \( \mathbf{x} \).
+    \item \( H(\mathbf{x}) \succ 0 \) (positive definite) implies \( f \) is strictly convex (sufficient but not necessary).
+\end{itemize}
+
+\paragraph{Proof (Sufficiency):}
+Suppose \( H(\mathbf{x}) \succeq 0 \) for all \( \mathbf{x} \). By Taylor expansion:
+\[
+f(\mathbf{x} + \mathbf{d}) = f(\mathbf{x}) + \nabla f(\mathbf{x})^T \mathbf{d} + \frac{1}{2} \mathbf{d}^T H(\mathbf{z}) \mathbf{d}
+\]
+for some \( \mathbf{z} \) on the line segment between \( \mathbf{x} \) and \( \mathbf{x} + \mathbf{d} \). Since \( H(\mathbf{z}) \succeq 0 \), we have:
+\[
+f(\mathbf{x} + \mathbf{d}) \geq f(\mathbf{x}) + \nabla f(\mathbf{x})^T \mathbf{d}
+\]
+This is the first-order condition for convexity, so \( f \) is convex.
+
+\paragraph{Proof (Necessity):}
+Suppose \( f \) is convex and twice differentiable. For any \( \mathbf{x}, \mathbf{y} \), define \( \phi(t) = f(\mathbf{x} + t(\mathbf{y} - \mathbf{x})) \). Then \( \phi \) is convex as a scalar function, so:
+\[
+\phi''(t) = (\mathbf{y} - \mathbf{x})^T H(\mathbf{x} + t(\mathbf{y} - \mathbf{x})) (\mathbf{y} - \mathbf{x}) \ge 0
+\]
+for all \( t \in [0,1] \). Since \( \mathbf{y} - \mathbf{x} \) is arbitrary, this implies \( H(\mathbf{z}) \succeq 0 \) for all \( \mathbf{z} \), i.e., the Hessian is positive semidefinite everywhere.
+
+
+\section{Unconstrained Minimization}
+Unconstrained minimization deals with finding the minimum of a function $f(\mathbf{x})$ without any constraints on $\mathbf{x}$.
+
+\subsection{Method of Steepest Descent}
+The method of steepest descent is an iterative optimization algorithm that moves towards the local minimum by taking steps proportional to the negative of the gradient of the function at the current point.
+
+The objective is to minimize $f(\mathbf{x})$.
+The search for the best direction is along the negative gradient.
+The direction of descent is given by:
+\begin{equation}
+    \mathbf{u} = \frac{-\nabla f(\mathbf{x})}{\|\nabla f(\mathbf{x})\|}
+\end{equation}
+The update rule for the next iteration is $\mathbf{x}^{i+1} = \mathbf{x}^i + \lambda_i \mathbf{u}^i$.
+A key condition for optimal descent is when the derivative of $g(\lambda) = f(\mathbf{x}^i + \lambda \mathbf{u}^i)$ with respect to $\lambda$ is zero:
+\begin{equation}
+    \frac{d}{d\lambda} f(\mathbf{x}^i + \lambda \mathbf{u}^i) = \nabla f(\mathbf{x}^i + \lambda \mathbf{u}^i)^T \mathbf{u}^i = 0
+\end{equation}
+This implies that the new gradient is orthogonal to the search direction.
+The method can be slow to converge due to a "zigzag pattern".
+
+Convergence criteria include:
+\begin{itemize}
+    \item $||\mathbf{x}^i - \mathbf{x}^{i-1}|| < \epsilon$
+    \item $|f(\mathbf{x}^i) - f(\mathbf{x}^{i-1})| < \xi$
+\end{itemize}
+
+Line search methods (e.g., Armijo, curvature conditions) are used to find an appropriate step size $\lambda_i$ that ensures sufficient improvement.
+
+\paragraph{Example}
+
+Consider the function:
+\begin{equation*}
+    f(x, y) = (x - 2)^2 + (y + 3)^2
+\end{equation*}
+This is a convex quadratic function with a unique minimum at $(x^*, y^*) = (2, -3)$.
+
+We apply the method of steepest descent starting from the point $\mathbf{x}^0 = (0, 0)$. The gradient of $f$ is:
+\begin{equation*}
+    \nabla f(x, y) = 
+    \begin{bmatrix}
+        2(x - 2) \\
+        2(y + 3)
+    \end{bmatrix}
+\end{equation*}
+
+At each iteration $i$, the steepest descent direction is:
+\begin{equation*}
+    \mathbf{u}^i = \frac{-\nabla f(\mathbf{x}^i)}{\|\nabla f(\mathbf{x}^i)\|}
+\end{equation*}
+
+We find the optimal step size $\lambda_i$ using exact line search by minimizing:
+\begin{equation*}
+    g(\lambda) = f(\mathbf{x}^i + \lambda \mathbf{u}^i)
+\end{equation*}
+
+Differentiating and setting the derivative to zero gives:
+\begin{equation*}
+    \lambda_i = - \left( u_x^i(x^i - 2) + u_y^i(y^i + 3) \right)
+\end{equation*}
+
+\paragraph{Iteration 0:}
+\begin{itemize}
+    \item Starting point: $\mathbf{x}^0 = (0, 0)$
+    \item Gradient: $\nabla f(\mathbf{x}^0) = (-4, 6)$
+    \item Normalized descent direction: $\mathbf{u}^0 \approx (0.555, -0.832)$
+    \item Exact line search yields: $\lambda_0 \approx 3.606$
+    \item Update: $\mathbf{x}^1 = \mathbf{x}^0 + \lambda_0 \mathbf{u}^0 \approx (2.0, -3.0)$
+\end{itemize}
+
+
+\subsection{Conjugate Gradient Methods}
+Conjugate gradient methods are more sophisticated iterative methods, particularly effective for positive-definite quadratic functions, for which they converge in a finite number of steps.
+A quadratic function can be written as:
+\begin{equation}
+    g(\mathbf{x}) = \frac{1}{2}\mathbf{x}^T A \mathbf{x} + \mathbf{b}^T \mathbf{x} + c
+\end{equation}
+where $A$ is a symmetric positive-definite matrix.
+The directions $\mathbf{u}^i$ and $\mathbf{u}^{i+1}$ are A-conjugate, meaning $\mathbf{u}^i A \mathbf{u}^{i+1} = 0$.
+For symmetric matrices, eigenvectors are orthogonal (and can form A-conjugate directions).
+The Fletcher-Reeves direction is a common choice for conjugate gradient methods:
+\begin{equation}
+    \mathbf{u}^0 = -\nabla f(\mathbf{x}^0)
+\end{equation}
+\begin{equation}
+    \mathbf{u}^{i+1} = -\nabla f(\mathbf{x}^i) + \beta_i \mathbf{u}^i
+\end{equation}
+where $\beta_i$ is given by:
+\begin{equation}
+    \beta_i = \frac{||\nabla f(\mathbf{x}^i)||^2}{||\nabla f(\mathbf{x}^{i-1})||^2}
+\end{equation}
+
+\subsection{Second-Order Line Search Method - Newton's Method}
+Newton's method is a second-order optimization method that uses both the gradient and the Hessian matrix to find the optimal point.
+It is based on the Taylor expansion of $f(\mathbf{x})$ around $\mathbf{x}^i$:
+\begin{equation}
+    f(\mathbf{x}^{*})=f(\mathbf{x}^{i})+\nabla^{T}f(\mathbf{x}^{i})\mathbf{u}+\frac{1}{2}\mathbf{u}^{T}H(\mathbf{x}^{i})\mathbf{u}
+\end{equation}
+Let $\mathbf{u} = \mathbf{x} - \mathbf{x}^i$. To find the optimal point $\mathbf{x}^*$, we set the gradient of the Taylor expansion with respect to $\mathbf{u}$ to zero:
+\begin{equation}
+    \nabla f(\mathbf{x}^{*})=\nabla f(\mathbf{x}^{i})+H(\mathbf{x})\mathbf{u}=0
+\end{equation}
+This leads to the Newton direction:
+\begin{equation}
+    \mathbf{u}=-H(\mathbf{x}^{i})^{-1}\nabla_{f}(\mathbf{x}^{i})
+\end{equation}
+The update rule is then $\mathbf{x}^{i+1} = \mathbf{x}^i + \lambda_i \mathbf{u}^i$.
+Computing the Hessian and its inverse can be computationally expensive. To address this, Quasi-Newton methods are used, such as DFP (Davidon-Fletcher-Powell) and BFGS (Broyden-Fletcher-Goldfarb-Shanno). These methods approximate the Hessian or its inverse iteratively and can achieve quadratic termination (convergence in a finite number of steps for quadratic functions).
+
+\paragraph{Quasi-Newton Methods – BFGS Approximation}
+
+The \textbf{BFGS method} (Broyden-Fletcher-Goldfarb-Shanno) maintains a positive-definite approximation $B_k \approx H^{-1}(\mathbf{x}^k)$ of the inverse Hessian. At each step, it updates $B_k$ using gradient differences and step information:
+\begin{align*}
+    \mathbf{s}_k &= \mathbf{x}^{k+1} - \mathbf{x}^k \\
+    \mathbf{y}_k &= \nabla f(\mathbf{x}^{k+1}) - \nabla f(\mathbf{x}^k)
+\end{align*}
+
+The update rule for $B_{k+1}$ is:
+\begin{equation*}
+    B_{k+1} = B_k + \frac{\mathbf{s}_k \mathbf{s}_k^T}{\mathbf{s}_k^T \mathbf{y}_k}
+    - \frac{B_k \mathbf{y}_k \mathbf{y}_k^T B_k}{\mathbf{y}_k^T B_k \mathbf{y}_k}
+\end{equation*}
+
+The search direction is then:
+\begin{equation*}
+    \mathbf{u}^k = -B_k \nabla f(\mathbf{x}^k)
+\end{equation*}
+
+BFGS avoids explicit computation of the Hessian while achieving superlinear convergence under suitable conditions. It is widely used in practical optimization due to its balance between efficiency and robustness.
+
+
+\subsection{Gauss-Newton Method for Non-linear Least Squares}
+The Gauss-Newton method is specifically designed for non-linear least squares problems. The problem is to minimize:
+\begin{equation}
+    g(\mathbf{x})=f_{1}^{2}(\mathbf{x})+\dots+f_{m}^{2}(\mathbf{x}) = \sum_{l=1}^m f_l(\mathbf{x})^2
+\end{equation}
+where $\mathbf{f}(\mathbf{x}) = (f_1(\mathbf{x}), f_2(\mathbf{x}), \dots, f_m(\mathbf{x}))^T$ is a vector-valued function from $\mathbb{R}^n \rightarrow \mathbb{R}^m$.
+The gradient of $g(\mathbf{x})$ is $\nabla g(\mathbf{x}) = 2 J_{f}(\mathbf{x})^T \mathbf{f}(\mathbf{x})$.
+
+We have 
+\begin{equation}
+    \nabla g_j(\mathbf{x}) = 2 \sum_{l=1}^m f_l(\mathbf{x_j}) \nabla f_l(\mathbf{x_j})
+\end{equation}
+Hence, the Hessian of $g(\mathbf{x})$ is given by:
+\begin{equation}
+    H_g(\mathbf{x})_{jk}=2\sum_{l}(f_{l}\frac{\partial^2 f_{l}}{\partial x_{j}\partial x_{k}}+\frac{\partial f_{l}}{\partial x_{k}}\frac{\partial f_{l}}{\partial x_{j}})
+\end{equation}
+In the Gauss-Newton approximation, the first term involving second derivatives is often neglected, especially when $f_l(\mathbf{x})$ are small at the solution:
+\begin{equation}
+    H_g(\mathbf{x})\approx 2J^{T}J
+\end{equation}
+The Gauss-Newton step, $\mathbf{u}$, is then obtained by solving the system of linear equations:
+\begin{equation}
+    (J(\mathbf{x})^T J(\mathbf{x})) \mathbf{u} = - J(\mathbf{x})^T \mathbf{f}(\mathbf{x})
+\end{equation}
+The solution for $\mathbf{u}$ is:
+\begin{equation}
+    \mathbf{u} = -(J(\mathbf{x})^T J(\mathbf{x}))^{-1} J(\mathbf{x})^T \mathbf{f}(\mathbf{x})
+\end{equation}
+A significant advantage is that there is no need to compute the Hessian directly.
+
+
+\subsection{Levenberg-Marquardt Algorithm}
+The Levenberg-Marquardt algorithm is a robust optimization algorithm that blends the Gauss-Newton method and the method of steepest descent. It is particularly useful for non-linear least squares problems.
+
+When the starting point is far from the solution, the Gauss-Newton method can be slow to converge, especially if the quadratic assumption is not strong. In such cases, it is better to use a gradient-descent-like approach.
+
+Levenberg-Marquardt adds a "damping parameter" $\lambda$ to the Gauss-Newton step:
+\begin{equation}
+    \mathbf{u} = -(J^{T}J+\lambda I)^{-1}J^{T}\mathbf{f}
+\end{equation}
+\begin{itemize}
+    \item When $\lambda \rightarrow 0$, the algorithm approaches the Gauss-Newton update.
+    \item When $\lambda \rightarrow \infty$, the algorithm approaches a gradient-descent update with a smaller step size, ignoring higher-order terms. This causes it to follow the gradient more closely.
+\end{itemize}
+The damping parameter $\lambda$ is adjusted during the optimization process: it is decreased if the step is good and increased if the step is unacceptable.
+
+\paragraph{Damping Parameter in Levenberg-Marquardt}
+
+The damping parameter $\lambda$ is updated adaptively based on how well the model predicts the actual reduction in the objective.
+
+After computing the update $\mathbf{u}_k$ by solving:
+\begin{equation*}
+    (J^T J + \lambda I)\mathbf{u}_k = -J^T \mathbf{f},
+\end{equation*}
+the gain ratio is evaluated:
+\begin{equation*}
+    \rho_k = \frac{f(\mathbf{x}^k) - f(\mathbf{x}^k + \mathbf{u}_k)}{m_k(0) - m_k(\mathbf{u}_k)},
+\end{equation*}
+where $m_k(\mathbf{u})$ is a local model of the objective.
+
+The parameter $\lambda$ is updated based on $\rho_k$:
+\begin{itemize}
+    \item If $\rho_k > 0.75$: decrease $\lambda$ (trust Gauss-Newton more)
+    \item If $\rho_k < 0.25$: increase $\lambda$ (trust gradient descent more)
+    \item Otherwise: keep $\lambda$ unchanged
+\end{itemize}
+This adaptive scheme helps ensure global convergence and fast local convergence near the optimum.
+
+
+\section{\textbf{Constrained Optimization}}
+
+\subsection{Equality Constrained Problems and the Lagrangian Function}
+For a problem of minimizing a function subject to equality constraints:
+\begin{align*}
+    \min \quad & g(\mathbf{x}) \\
+    \text{s.t.} \quad & h_j(\mathbf{x}) = 0, \quad j=1, 2, \dots, p
+\end{align*}
+The \textbf{Lagrangian function} $\mathcal{L}(\mathbf{x}, \lambda)$ is defined as:
+\begin{equation}
+    \mathcal{L}(\mathbf{x}, \lambda) = g(\mathbf{x}) + \sum_{j=1}^p \lambda_j h_j(\mathbf{x})
+\end{equation}
+where $\lambda = (\lambda_1, \dots, \lambda_p)^T$ is the vector of \textbf{Lagrange multipliers}.
+
+A \textbf{necessary condition} for $\mathbf{x}^*$ to be a local minimum is that there exists a $\lambda^*$ such that $\nabla \mathcal{L}(\mathbf{x}^*, \lambda^*) = 0$. This means:
+\begin{align*}
+    \frac{\partial \mathcal{L}}{\partial x_i} = \frac{\partial g}{\partial x_i} + \sum_{j=1}^p \lambda_j \frac{\partial h_j}{\partial x_i} &= 0 \quad \text{for all } i \\
+    \frac{\partial \mathcal{L}}{\partial \lambda_j} = h_j(\mathbf{x}) &= 0 \quad \text{for all } j
+\end{align*}
+\textbf{Sufficient conditions} often involve convexity of $f$ and $h_j$ being concave or linear, along with the rank of the Jacobian of the constraints being full at the solution.
+
+\subsection{Special Cases: Quadratic Function with Linear Equality Constraints}
+Consider the problem of minimizing a quadratic function subject to linear equality constraints:
+\begin{align*}
+    \min \quad & f(\mathbf{x}) = \frac{1}{2}\mathbf{x}^T A \mathbf{x} + \mathbf{b}^T \mathbf{x} + c \\
+    \text{s.t.} \quad & C\mathbf{x} = \mathbf{d}
+\end{align*}
+The Lagrangian is:
+\begin{equation}
+    \mathcal{L}(\mathbf{x}, \lambda) = \frac{1}{2}\mathbf{x}^T A \mathbf{x} + \mathbf{b}^T \mathbf{x} + c + \lambda^T (C\mathbf{x} - \mathbf{d})
+\end{equation}
+The necessary conditions for optimality, by setting the partial derivatives with respect to $\mathbf{x}$ and $\lambda$ to zero, lead to:
+\begin{align*}
+    \frac{\partial \mathcal{L}}{\partial \mathbf{x}} = A\mathbf{x} + \mathbf{b} + C^T\lambda &= 0 \\
+    \frac{\partial \mathcal{L}}{\partial \lambda} = C\mathbf{x} - \mathbf{d} &= 0
+\end{align*}
+This forms a system of linear equations:
+\begin{equation}
+    \begin{pmatrix} A & C^T \\ C & 0 \end{pmatrix} \begin{pmatrix} \mathbf{x} \\ \lambda \end{pmatrix} = \begin{pmatrix} -\mathbf{b} \\ \mathbf{d} \end{pmatrix}
+\end{equation}
+The solution for $\mathbf{x}^*$ and $\lambda^*$ is given by:
+\begin{equation}
+    \begin{pmatrix} \mathbf{x}^{*} \\ \lambda^{*} \end{pmatrix} = \begin{pmatrix} A & C^T \\ C & 0 \end{pmatrix}^{-1} \begin{pmatrix} -\mathbf{b} \\ \mathbf{d} \end{pmatrix}
+\end{equation}
+
+\subsection{Optimization with Inequality Constraints: KKT Conditions}
+For problems with inequality constraints:
+\begin{align*}
+    \min \quad & f(\mathbf{x}) \\
+    \text{s.t.} \quad & g_j(\mathbf{x}) \le 0, \quad j=1, 2, \dots, m
+\end{align*}
+The Lagrangian function is:
+\begin{equation}
+    \mathcal{L}(\mathbf{x}, \lambda) = f(\mathbf{x}) + \sum_{j=1}^m \lambda_j g_j(\mathbf{x})
+\end{equation}
+The \textbf{Karush-Kuhn-Tucker (KKT) conditions} are necessary conditions for $\mathbf{x}^*$ to be a local minimum:
+\begin{itemize}
+    \item \textbf{Stationarity:} $\nabla_x \mathcal{L}(\mathbf{x}^*, \lambda^*) = \nabla f(\mathbf{x}^*) + \sum_{j=1}^m \lambda_j^* \nabla g_j(\mathbf{x}^*) = 0$
+    \item \textbf{Primal Feasibility:} $g_j(\mathbf{x}^*) \le 0$, for all $j=1, \dots, m$
+    \item \textbf{Dual Feasibility:} $\lambda_j^* \ge 0$, for all $j=1, \dots, m$
+    \item \textbf{Complementary Slackness:} $\lambda_j^* g_j(\mathbf{x}^*) = 0$, for all $j=1, \dots, m$ (This implies that if $g_j(\mathbf{x}^*) < 0$, then $\lambda_j^* = 0$, and if $\lambda_j^* > 0$, then $g_j(\mathbf{x}^*) = 0$, meaning the constraint is \textbf{active}).
+\end{itemize}
+Sufficient conditions for convex optimization problems require $f(\mathbf{x})$ and $g_j(\mathbf{x})$ to be convex functions. Additional conditions like Slater's condition ensure the existence of Lagrange multipliers.
+
+\subsubsection{Example: Constrained Optimization with a Valid Solution}
+
+Consider the problem:
+\begin{align*}
+    \min_{x,y} \quad & f(x, y) = (x - 1)^2 + (y - 1)^2 \\
+    \text{s.t.} \quad & h(x,y) = x + y - 1 = 0 \quad \text{(equality)} \\
+    & g(x,y) = x^2 + y^2 - 1 \leq 0 \quad \text{(inequality)}
+\end{align*}
+
+\paragraph{Lagrangian:}
+\[
+\mathcal{L}(x, y, \lambda, \mu) = (x - 1)^2 + (y - 1)^2 + \lambda (x + y - 1) + \mu (x^2 + y^2 - 1)
+\]
+
+
+
+\paragraph{Final Solution (inactive inequality):}
+Solving the simplified KKT system with \(\mu = 0\), we get:
+\[
+x^* = y^* = \frac{1}{2}, \quad \lambda^* = 1, \quad \mu^* = 0
+\]
+
+\paragraph{Optimal Value:}
+\[
+f(x^*, y^*) = \left(\frac{1}{2} - 1\right)^2 + \left(\frac{1}{2} - 1\right)^2 = \frac{1}{4} + \frac{1}{4} = \frac{1}{2}
+\]
+
+\paragraph{Conclusion:}
+The point \((x^*, y^*) = \left(\frac{1}{2}, \frac{1}{2}\right)\) satisfies all KKT conditions with the inequality inactive, and is the unique solution to the problem.
+
+
+
+\subsection{Duality Theorem}
+The duality theorem provides a way to solve the primal optimization problem by solving its dual.
+The \textbf{dual function} $h(\lambda)$ is defined as:
+\begin{equation}
+    h(\lambda) = \min_{\mathbf{x}} \mathcal{L}(\mathbf{x}, \lambda)
+\end{equation}
+The \textbf{dual problem} is then to maximize this dual function:
+\begin{align*}
+    \max \quad & h(\lambda) \\
+    \text{s.t.} \quad & \lambda \ge 0
+\end{align*}
+A \textbf{practical approach} involves:
+\begin{enumerate}
+    \item Finding $x^*(\lambda)$ by minimizing $\mathcal{L}(\mathbf{x}, \lambda)$ with respect to $\mathbf{x}$ for a fixed $\lambda$.
+    \item Substituting $x^*(\lambda)$ back into $\mathcal{L}(\mathbf{x}, \lambda)$ to get the dual function $h(\lambda)$.
+    \item Solving the dual problem: $\max_{\lambda \ge 0} h(\lambda)$ to get $\lambda^*$.
+    \item Substituting $\lambda^*$ back into $x^*(\lambda)$ to obtain the optimal $\mathbf{x}^*$ for the primal problem.
+\end{enumerate}
+
+\subsubsection{Example: Solving a Problem via Duality}
+
+We solve:
+\begin{align*}
+    \min_{x, y} \quad & f(x, y) = (x - 2)^2 + (y - 1)^2 \\
+    \text{s.t.} \quad & x + y - 2 \ge 0
+\end{align*}
+
+Rewrite constraint as:
+\[
+g(x, y) = 2 - x - y \le 0
+\]
+
+Now we form the Lagrangian:
+\[
+\mathcal{L}(x, y, \lambda) = (x - 2)^2 + (y - 1)^2 + \lambda(2 - x - y), \quad \lambda \ge 0
+\]
+
+Take partial derivatives:
+\begin{align*}
+    \frac{\partial \mathcal{L}}{\partial x} &= 2(x - 2) - \lambda = 0 \Rightarrow x^*(\lambda) = 2 + \frac{\lambda}{2} \\
+    \frac{\partial \mathcal{L}}{\partial y} &= 2(y - 1) - \lambda = 0 \Rightarrow y^*(\lambda) = 1 + \frac{\lambda}{2}
+\end{align*}
+
+Substitute into \( \mathcal{L} \) to get the dual function:
+\begin{align*}
+h(\lambda) &= (x^* - 2)^2 + (y^* - 1)^2 + \lambda(2 - x^* - y^*) \\
+&= \left(\frac{\lambda}{2}\right)^2 + \left(\frac{\lambda}{2}\right)^2 + \lambda\left(2 - 2 - \lambda\right) \\
+&= \frac{\lambda^2}{2} - \lambda^2 = -\frac{\lambda^2}{2}
+\end{align*}
+
+We now solve the dual problem:
+
+\[
+\max_{\lambda \ge 0} h(\lambda) = -\frac{\lambda^2}{2}
+\]
+
+This is maximized at \( \lambda^* = 0 \). Check constraint:
+\[
+x^* + y^* - 2 = 1 > 0 \quad \text{→ satisfied (inactive)}
+\]
+
+
+
+\subsection{Quadratic Programming}
+
+\textbf{Quadratic Programming (QP)} refers to optimization problems with a quadratic objective function and linear constraints. A standard QP problem is written as:
+\begin{align*}
+    \min_{\mathbf{x} \in \mathbb{R}^n} \quad & f(\mathbf{x}) = \frac{1}{2}\mathbf{x}^T A \mathbf{x} + \mathbf{b}^T \mathbf{x} + c \\
+    \text{s.t.} \quad & C\mathbf{x} \le \mathbf{d}
+\end{align*}
+where:
+\begin{itemize}
+    \item \( A \in \mathbb{R}^{n \times n} \) is a symmetric matrix,
+    \item \( \mathbf{b} \in \mathbb{R}^n \), \( C \in \mathbb{R}^{m \times n} \), \( \mathbf{d} \in \mathbb{R}^m \),
+    \item \( \mathbf{x} \) is the decision variable.
+\end{itemize}
+
+\subsubsection*{Convexity Conditions}
+
+The QP problem is \textbf{convex} if the matrix \( A \) is \textbf{positive semi-definite}:
+\[
+A \succeq 0 \quad \Rightarrow \quad \mathbf{x}^T A \mathbf{x} \ge 0 \quad \forall \, \mathbf{x}
+\]
+
+Under convexity, the objective function is bowl-shaped, and every local minimum is a global minimum. Convexity ensures that efficient algorithms can be used to find the global optimum, and that the Karush-Kuhn-Tucker (KKT) conditions are both necessary and sufficient for optimality.
+
+\subsubsection*{KKT Conditions for QP}
+
+The KKT conditions for the QP are:
+\begin{align*}
+    & \text{Stationarity:} && A\mathbf{x}^* + \mathbf{b} + C^T \boldsymbol{\lambda}^* = 0 \\
+    & \text{Primal feasibility:} && C\mathbf{x}^* \le \mathbf{d} \\
+    & \text{Dual feasibility:} && \boldsymbol{\lambda}^* \ge 0 \\
+    & \text{Complementary slackness:} && \lambda_i^*(C_i \mathbf{x}^* - d_i) = 0 \quad \text{for all } i
+\end{align*}
+
+\subsubsection*{Active Set Method}
+
+An important concept in solving QP problems is the \textbf{active set}:
+\begin{itemize}
+    \item The \textbf{active set} at a point \( \mathbf{x} \) is the set of constraints that are active (i.e., satisfied with equality): 
+    \[
+    \mathcal{A}(\mathbf{x}) = \{ i : C_i \mathbf{x} = d_i \}
+    \]
+    \item At the solution, some constraints may be active (binding), and others may be inactive (strictly satisfied).
+\end{itemize}
+
+\textbf{Active set methods} are iterative algorithms that:
+\begin{enumerate}
+    \item Start with an initial feasible point and a guess of the active set.
+    \item Solve the equality-constrained QP defined by the active constraints:
+    \[
+    \min_{\mathbf{x}} \quad \frac{1}{2}\mathbf{x}^T A \mathbf{x} + \mathbf{b}^T \mathbf{x} \quad \text{s.t. } C_i \mathbf{x} = d_i, \; i \in \mathcal{A}
+    \]
+    \item Compute the Lagrange multipliers \( \lambda_i \) for all active constraints.
+    \item If any \( \lambda_i < 0 \), remove that constraint from the active set (it was incorrectly assumed active).
+    \item Otherwise, test whether adding any inactive constraint improves the solution.
+\end{enumerate}
+
+This process repeats until all KKT conditions are satisfied.
+
+Identifying the correct active set is equivalent to identifying the face of the feasible region that contains the optimum.
+
+\paragraph{Example: Solving a QP Problem}
+
+
+Consider the problem of minimizing the function \( f(x, y) = x^2 + 2y^2 - 2x - 4y \) subject to the constraints \( x + y \ge 3 \), \( x \ge 0 \), and \( y \ge 0 \). This is a quadratic programming problem with inequality constraints. Rewriting the constraints in the standard form \( g_i(x, y) \le 0 \), we have:
+\[
+g_1(x, y) = 3 - x - y \le 0, \quad g_2(x, y) = -x \le 0, \quad g_3(x, y) = -y \le 0.
+\]
+We define the Lagrangian as:
+\[
+\mathcal{L}(x, y, \lambda_1, \lambda_2, \lambda_3) = x^2 + 2y^2 - 2x - 4y + \lambda_1(3 - x - y) + \lambda_2(-x) + \lambda_3(-y),
+\]
+with \( \lambda_i \ge 0 \). The stationarity conditions are:
+\[
+\frac{\partial \mathcal{L}}{\partial x} = 2x - 2 - \lambda_1 - \lambda_2 = 0, \quad
+\frac{\partial \mathcal{L}}{\partial y} = 4y - 4 - \lambda_1 - \lambda_3 = 0.
+\]
+We now test multiple active sets.
+
+First, assume constraint 1 is active, and both \( x > 0 \) and \( y > 0 \), implying \( \lambda_2 = \lambda_3 = 0 \). Then from stationarity: \( 2x - 2 - \lambda_1 = 0 \Rightarrow \lambda_1 = 2x - 2 \), and \( 4y - 4 - \lambda_1 = 0 \Rightarrow \lambda_1 = 4y - 4 \). Equating the two expressions gives \( 2x - 2 = 4y - 4 \Rightarrow x = 2y - 1 \). Substituting into the active constraint \( x + y = 3 \) yields \( (2y - 1) + y = 3 \Rightarrow 3y = 4 \Rightarrow y = \frac{4}{3} \), and \( x = 2y - 1 = \frac{5}{3} \). This candidate point is feasible, and since all inactive constraints are strictly satisfied, we check the multipliers: \( \lambda_1 = 2x - 2 = \frac{4}{3} > 0 \). Hence, all KKT conditions are satisfied. But we keep testing for possibly better solutions.
+
+Try the case where constraint 2 is active. Set \( x = 0 \). Plug into the stationarity conditions: from \( \partial \mathcal{L}/\partial x = -2 - \lambda_1 - \lambda_2 = 0 \Rightarrow \lambda_1 + \lambda_2 = -2 \), which violates dual feasibility (as \( \lambda_i \ge 0 \)). This case is invalid.
+
+Try the case where constraint 3 is active. Set \( y = 0 \). Plug into the stationarity conditions: from \( \partial \mathcal{L}/\partial y = -4 - \lambda_1 - \lambda_3 = 0 \Rightarrow \lambda_1 + \lambda_3 = -4 \), which violates dual feasibility (as \( \lambda_i \ge 0 \)). This case is invalid.
+
+
+
+\subsection{Sequential Quadratic Programming (SQP)}
+\textbf{Sequential Quadratic Programming (SQP)} is an iterative method for solving non-linear constrained optimization problems by approximating them as a sequence of quadratic programming subproblems.
+Consider the general non-linear constrained problem:
+\begin{align*}
+    \min \quad & f(\mathbf{x}) \\
+    \text{s.t.} \quad & g_j(\mathbf{x}) \le 0, \quad j=1, \dots, m \\
+    & h_j(\mathbf{x}) = 0, \quad j=1, \dots, p
+\end{align*}
+Given estimates $\mathbf{x}^k$ and respective Lagrange multiplier values $\lambda^k \ge 0$, the next step $\mathbf{s}$ (where $\mathbf{x}^{k+1} = \mathbf{x}^k + \mathbf{s}$) is obtained by solving a \textbf{QP subproblem} at each iteration:
+\begin{align*}
+    \min_{\mathbf{s}} \quad & F(\mathbf{s}) = \nabla f(\mathbf{x}^k)^T \mathbf{s} + \frac{1}{2}\mathbf{s}^T H_L(\mathbf{x}^k, \lambda^k) \mathbf{s} \\
+    \text{s.t.} \quad & g_j(\mathbf{x}^k) + \nabla g_j(\mathbf{x}^k)^T \mathbf{s} \le 0, \quad j=1, \dots, m \\
+    & h_j(\mathbf{x}^k) + \nabla h_j(\mathbf{x}^k)^T \mathbf{s} = 0, \quad j=1, \dots, p
+\end{align*}
+where $H_L(\mathbf{x}^k, \lambda^k)$ is an approximation of the Hessian of the Lagrangian with respect to $\mathbf{x}$:
+\begin{equation}
+    H_L(\mathbf{x}^k, \lambda^k) = \nabla^2 f(\mathbf{x}^k) + \sum_{j=1}^m \lambda_j^k \nabla^2 g_j(\mathbf{x}^k) + \sum_{j=1}^p \mu_j^k \nabla^2 h_j(\mathbf{x}^k)
+\end{equation}
+(where $\mu$ are multipliers for equality constraints, if explicit differentiation between $\lambda$ for inequality and $\mu$ for equality is made).
+The QP subproblem is solved for $\mathbf{s}$, and then $\mathbf{x}$ and the multipliers are updated. \textbf{Active set methods} are often used to determine the active constraints at each iteration.
+
+\paragraph{Example: SQP with Non-Quadratic Objective}
+
+Consider the following constrained optimization problem:
+\[
+\min_{x, y} \quad f(x, y) = \sin(x) + y^2
+\]
+subject to the nonlinear inequality constraint:
+\[
+g(x, y) = x^2 + y^2 - 2 \le 0
+\]
+This problem seeks to minimize a non-quadratic function (due to the sine term), while staying inside a circle of radius \(\sqrt{2}\).
+
+\textbf{Step 1: Initial Point.}  
+Choose \( \mathbf{x}^0 = (1, 0)^T \). Then:
+\[
+\nabla f(x, y) = \begin{bmatrix} \cos(x) \\ 2y \end{bmatrix}, \quad
+\nabla f(\mathbf{x}^0) = \begin{bmatrix} \cos(1) \\ 0 \end{bmatrix}
+\]
+
+Constraint gradient and value:
+\[
+g(x, y) = x^2 + y^2 - 2, \quad \nabla g(x, y) = \begin{bmatrix} 2x \\ 2y \end{bmatrix}, \quad \nabla g(\mathbf{x}^0) = \begin{bmatrix} 2 \\ 0 \end{bmatrix}
+\]
+
+Constraint value at initial point:
+\[
+g(\mathbf{x}^0) = 1^2 + 0^2 - 2 = -1 < 0 \quad \Rightarrow \text{Feasible}
+\]
+
+\textbf{Step 2: Hessian of the Lagrangian.}  
+Assume current estimate of multiplier \( \lambda^0 = 0 \). Then:
+\[
+\nabla^2 f(x, y) = \begin{bmatrix} -\sin(x) & 0 \\ 0 & 2 \end{bmatrix}, \quad
+\nabla^2 g(x, y) = \begin{bmatrix} 2 & 0 \\ 0 & 2 \end{bmatrix}
+\]
+\[
+H_L(x, y, \lambda) = \nabla^2 f(x, y) + \lambda \nabla^2 g(x, y)
+\]
+
+At \( \mathbf{x}^0 = (1, 0) \), with \( \lambda^0 = 0 \), we get:
+\[
+H_L = \begin{bmatrix} -\sin(1) & 0 \\ 0 & 2 \end{bmatrix}
+\]
+
+\textbf{Step 3: Linearize the Constraint.}  
+\[
+g(\mathbf{x}^0) + \nabla g(\mathbf{x}^0)^T \mathbf{s} = -1 + 2s_1 \le 0 \quad \Rightarrow \quad s_1 \le 0.5
+\]
+
+\textbf{Step 4: Form the QP Subproblem.}  
+Minimize the quadratic approximation:
+\[
+\min_{\mathbf{s}} \quad \cos(1) \cdot s_1 + \frac{1}{2} \left( -\sin(1)s_1^2 + 2s_2^2 \right)
+\quad \text{subject to} \quad s_1 \le 0.5
+\]
+
+\textbf{Step 5: Solve and Iterate.}  
+This is a proper QP — solve it using standard techniques (e.g., Lagrangian/KKT or active-set method). The solution \( \mathbf{s}^* \) gives:
+\[
+\mathbf{x}^1 = \mathbf{x}^0 + \mathbf{s}^*
+\]
+
+You then:
+- Recompute \( \nabla f, \nabla g \), and \( H_L \)
+- Solve a new QP around \( \mathbf{x}^1 \)
+- Repeat until convergence
+
+\subsubsection{Newton SQP}
+
+When dealing with only equality constraints, Newton's method can be applied directly to the first-order optimality conditions (KKT system) to find the optimal point.
+
+\paragraph{Problem Setup.}
+Consider the equality-constrained optimization problem:
+\[
+\min_{\mathbf{x}} \; f(\mathbf{x}) \quad \text{subject to} \quad h_i(\mathbf{x}) = 0, \quad i = 1, \dots, p
+\]
+Define the Lagrangian:
+\[
+\mathcal{L}(\mathbf{x}, \lambda) = f(\mathbf{x}) + \sum_{i=1}^p \lambda_i h_i(\mathbf{x}) = f(\mathbf{x}) + \mathbf{h}(\mathbf{x})^T \lambda
+\]
+
+\paragraph{First-Order Optimality Conditions (KKT).}
+The necessary conditions for optimality are:
+\[
+\begin{cases}
+\nabla_{\mathbf{x}} \mathcal{L}(\mathbf{x}, \lambda) = \nabla f(\mathbf{x}) + \nabla \mathbf{h}(\mathbf{x})^T \lambda = 0 \\
+\mathbf{h}(\mathbf{x}) = 0
+\end{cases}
+\]
+This defines a system of \( n + p \) nonlinear equations in \( n + p \) unknowns.
+
+\paragraph{Solving the KKT System via Newton's Method.}
+We define a combined function:
+\[
+F(\mathbf{z}) = F(\mathbf{x}, \lambda) =
+\begin{pmatrix}
+\nabla f(\mathbf{x}) + \nabla \mathbf{h}(\mathbf{x})^T \lambda \\
+\mathbf{h}(\mathbf{x})
+\end{pmatrix}
+\quad \text{with} \quad \mathbf{z} = \begin{pmatrix} \mathbf{x} \\ \lambda \end{pmatrix}
+\]
+We now apply Newton’s method to solve \( F(\mathbf{z}) = 0 \). Recall that for a general nonlinear system \( F(\mathbf{z}) = 0 \), Newton’s method iteratively computes:
+\[
+\Delta \mathbf{z}_k = -[J_F(\mathbf{z}_k)]^{-1} F(\mathbf{z}_k)
+\quad \text{and updates} \quad \mathbf{z}_{k+1} = \mathbf{z}_k + \Delta \mathbf{z}_k
+\]
+Here, \( J_F(\mathbf{z}) \) is the Jacobian matrix of \( F \). In our case, this is the KKT matrix:
+\[
+J_F(\mathbf{x}, \lambda) =
+\begin{pmatrix}
+\nabla^2_{\mathbf{x}} \mathcal{L}(\mathbf{x}, \lambda) & \nabla \mathbf{h}(\mathbf{x})^T \\
+\nabla \mathbf{h}(\mathbf{x}) & 0
+\end{pmatrix}
+\]
+where:
+\[
+\nabla^2_{\mathbf{x}} \mathcal{L}(\mathbf{x}, \lambda) = \nabla^2 f(\mathbf{x}) + \sum_{i=1}^p \lambda_i \nabla^2 h_i(\mathbf{x})
+\]
+
+\paragraph{Newton Step.}
+Each iteration solves the linear system:
+\[
+\begin{pmatrix}
+\nabla^2_{\mathbf{x}} \mathcal{L}(\mathbf{x}_k, \lambda_k) & \nabla \mathbf{h}(\mathbf{x}_k)^T \\
+\nabla \mathbf{h}(\mathbf{x}_k) & 0
+\end{pmatrix}
+\begin{pmatrix}
+\Delta \mathbf{x} \\
+\Delta \lambda
+\end{pmatrix}
+=
+-
+\begin{pmatrix}
+\nabla f(\mathbf{x}_k) + \nabla \mathbf{h}(\mathbf{x}_k)^T \lambda_k \\
+\mathbf{h}(\mathbf{x}_k)
+\end{pmatrix}
+\]
+The updates are then:
+\[
+\mathbf{x}_{k+1} = \mathbf{x}_k + \Delta \mathbf{x}, \quad \lambda_{k+1} = \lambda_k + \Delta \lambda
+\]
+
+\paragraph{Summary.}
+Newton-SQP for equality constraints is essentially Newton’s method applied to the KKT system:
+\[
+F(\mathbf{x}, \lambda) = 0
+\]
+It uses second-order derivatives of the Lagrangian and ensures fast (quadratic) convergence under smoothness and regularity conditions. This approach is highly effective when exact Hessians are available and the constraints are well-behaved.
+
+\subsubsection{SQP Application Example}
+An example of an SQP application involves problems like minimizing a specific function (e.g., related to curve parameters or discount factors) subject to equality and inequality constraints. For instance:
+\begin{align*}
+    \min \quad & SP(\mathbf{x}) = \sum_{i=1}^{n-2}\left[\frac{f(t_{i+1},t_{i+2})-f(t_{i},t_{i+1})}{t_{i+2}-t_{i}} - \frac{f(t_{i},t_{i+1})-f(t_{i-1},t_{i})}{t_{i+1}-t_{i-1}}\right]^2 \\
+    \text{s.t.} \quad & \hat{R}_j(\mathbf{x}) - R_j = 0 \\
+    & R_k^{lower} \le R_k(\mathbf{x}) \le R_k^{upper}
+\end{align*}
+where $\mathbf{x}$ represents curve parameters (e.g., related to discount factors).
+Inequality constraints involving absolute values, like $|x|$, can be transformed into linear equality and inequality constraints by introducing auxiliary variables $u, v \ge 0$ such that $x = u - v$ and $|x| = u + v$. This transforms a non-linear problem into a QP subproblem which can then be solved by methods like the simplex algorithm after linearization.
+The constraints can be linearized around the current point $\mathbf{x}^k$, for example:
+$R_j(\mathbf{x}) \approx R_j(\mathbf{x}^k) + \nabla R_j(\mathbf{x}^k)^T (\mathbf{x} - \mathbf{x}^k)$.
+
+\section{\textbf{Simplex Method for Linear Programming}}
+
+The Simplex method is an algorithm for solving linear programming problems, which involve optimizing a linear objective function subject to linear equality and inequality constraints.
+
+\subsection{Standard Simplex Method}
+
+The standard form of a linear programming problem (LPP) is:
+\begin{align*}
+    \max \quad & z = \mathbf{c}^T \mathbf{x} \\
+    \text{s.t.} \quad & A\mathbf{x} \le \mathbf{b} \quad (\text{$m$ inequalities}) \\
+    & \mathbf{x} \ge 0
+\end{align*}
+where \( A \in \mathbb{R}^{m \times n} \), \( \mathbf{x} \in \mathbb{R}^n \), \( \mathbf{b} \in \mathbb{R}^m \), and \( \mathbf{c} \in \mathbb{R}^n \).
+
+\paragraph{Slack Variables.}
+To convert the inequality constraints into equalities, we introduce \textbf{slack variables} \( x_{n+1}, \dots, x_{n+m} \ge 0 \), one for each inequality. This gives:
+\[
+A\mathbf{x} + I\mathbf{s} = \mathbf{b}, \quad \text{or} \quad [A \mid I] \begin{pmatrix} \mathbf{x} \\ \mathbf{s} \end{pmatrix} = \mathbf{b}
+\]
+where \( \mathbf{s} \in \mathbb{R}^m \) and \( I \) is the \( m \times m \) identity matrix.
+
+We now define the full variable vector:
+\[
+\tilde{\mathbf{x}} = \begin{pmatrix} x_1 \\ \vdots \\ x_n \\ x_{n+1} \\ \vdots \\ x_{n+m} \end{pmatrix} \in \mathbb{R}^{n+m}
+\]
+
+\paragraph{Initial Basic Feasible Solution.}
+Assuming all \( b_i \ge 0 \), we set:
+\[
+x_1 = \cdots = x_n = 0, \quad x_{n+i} = b_i \quad \text{for } i = 1, \dots, m
+\]
+This gives a feasible solution with the slack variables forming the initial basis.
+
+\paragraph{Simplex Iteration.}
+The objective function is:
+\[
+z = c_1 x_1 + \cdots + c_n x_n
+\]
+The simplex method iteratively improves \( z \) by choosing:
+- An \textbf{incoming variable} \( x_i \) with \( c_i > 0 \)
+- An \textbf{outgoing variable} \( x_{n+k} \) determined by the smallest ratio:
+\[
+\frac{b_j}{a_{ji}}, \quad \text{for all } j \text{ such that } a_{ji} > 0
+\]
+
+This ensures feasibility (all variables \( \ge 0 \)). The outgoing variable is replaced in the basis.
+
+\paragraph{Pivot Operation.}
+Let \( x_i \) be the incoming variable and \( x_{n+k} \) the outgoing slack variable. The pivot row is normalized, and the rest of the tableau is updated using row operations. The value of \( x_i \) after the pivot is:
+\[
+x_i = \frac{b_k}{a_{ki}}, \quad \text{and } x_{n+k} \text{ is reduced to } 0
+\]
+
+\paragraph{Termination.}
+The algorithm terminates when all coefficients in the objective row (reduced costs) are \( \le 0 \). At this point, the current solution is optimal.
+\subsection{Simplex Method: Step-by-Step Example}
+
+Consider the linear program:
+\begin{align*}
+\max \quad & z = 3x_1 + 2x_2 \\
+\text{s.t.} \quad 
+& x_1 + x_2 \le 4 \\
+& 2x_1 + x_2 \le 5 \\
+& x_1, x_2 \ge 0
+\end{align*}
+
+\paragraph{Step 1: Convert to Standard Form.}
+Introduce slack variables \( x_3, x_4 \ge 0 \) to convert the inequalities into equalities:
+\begin{align*}
+x_1 + x_2 + x_3 &= 4 \\
+2x_1 + x_2 + x_4 &= 5
+\end{align*}
+The objective becomes:
+\[
+z = 3x_1 + 2x_2
+\]
+
+\paragraph{Step 2: Initial Simplex Tableau.}
+\[
+\begin{array}{c|cccc|c}
+\text{Basic} & x_1 & x_2 & x_3 & x_4 & \text{RHS} \\
+\hline
+x_3 & 1 & 1 & 1 & 0 & 4 \\
+x_4 & 2 & 1 & 0 & 1 & 5 \\
+\hline
+z   & -3 & -2 & 0 & 0 & 0 \\
+\end{array}
+\]
+
+\paragraph{Step 3: Choose Pivot.}
+- Most negative in \( z \)-row: \(-3\) under \( x_1 \) \( \Rightarrow \) \( x_1 \) enters.
+- Ratio test: \( \frac{4}{1} = 4 \), \( \frac{5}{2} = 2.5 \) \( \Rightarrow \) \( x_4 \) leaves.
+
+\paragraph{Step 4: Pivot on Row 2, Column 1.}
+Normalize pivot row:
+\[
+\text{Row 2} \leftarrow \text{Row 2} \div 2 \Rightarrow [1 \quad 0.5 \quad 0 \quad 0.5 \,|\, 2.5]
+\]
+
+Update Row 1:
+\[
+\text{Row 1} \leftarrow \text{Row 1} - \text{Row 2} \Rightarrow [0 \quad 0.5 \quad 1 \quad -0.5 \,|\, 1.5]
+\]
+
+Update \( z \)-row:
+\[
+z \leftarrow z + 3 \times \text{Row 2} \Rightarrow [0 \quad -0.5 \quad 0 \quad 1.5 \,|\, 7.5]
+\]
+
+\paragraph{Step 5: New Tableau.}
+\[
+\begin{array}{c|cccc|c}
+\text{Basic} & x_1 & x_2 & x_3 & x_4 & \text{RHS} \\
+\hline
+x_3 & 0 & 0.5 & 1 & -0.5 & 1.5 \\
+x_1 & 1 & 0.5 & 0 & 0.5 & 2.5 \\
+\hline
+z   & 0 & -0.5 & 0 & 1.5 & 7.5 \\
+\end{array}
+\]
+
+\paragraph{Step 6: Choose Next Pivot.}
+- Most negative in \( z \)-row: \(-0.5\) under \( x_2 \) \( \Rightarrow \) \( x_2 \) enters.
+- Ratio test: \( \frac{1.5}{0.5} = 3 \), \( \frac{2.5}{0.5} = 5 \) \( \Rightarrow \) \( x_3 \) leaves.
+
+\paragraph{Step 7: Pivot on Row 1, Column 2.}
+Normalize pivot row:
+\[
+\text{Row 1} \leftarrow \text{Row 1} \div 0.5 \Rightarrow [0 \quad 1 \quad 2 \quad -1 \,|\, 3]
+\]
+
+Update Row 2:
+\[
+\text{Row 2} \leftarrow \text{Row 2} - 0.5 \times \text{Row 1} \Rightarrow [1 \quad 0 \quad -1 \quad 1 \,|\, 1]
+\]
+
+Update \( z \)-row:
+\[
+z \leftarrow z + 0.5 \times \text{Row 1} \Rightarrow [0 \quad 0 \quad 1 \quad 1 \,|\, 9]
+\]
+
+\paragraph{Step 8: Final Tableau.}
+\[
+\begin{array}{c|cccc|c}
+\text{Basic} & x_1 & x_2 & x_3 & x_4 & \text{RHS} \\
+\hline
+x_2 & 0 & 1 & 2 & -1 & 3 \\
+x_1 & 1 & 0 & -1 & 1 & 1 \\
+\hline
+z   & 0 & 0 & 1 & 1 & 9 \\
+\end{array}
+\]
+
+\paragraph{Optimal Solution.}
+All coefficients in the \( z \)-row are non-negative. The current solution is optimal:
+\[
+x_1 = 1, \quad x_2 = 3, \quad z = 9
+\]
+
+\subsection{Auxiliary Problem for Infeasible Solutions}
+If any $b_j < 0$ for $j=1, \dots, m$, the initial solution with slack variables is not feasible. In such cases, an \textbf{auxiliary problem} is formulated to find an initial feasible solution for the original problem. This often involves introducing an artificial variable $x_0$ and minimizing it. For example, to maximize $w = -x_0$ subject to constraints:
+\begin{align*}
+    \sum_{i=1}a_{ji}x_{i}-x_{0}&\le b_{j}, \quad j=1,2,...,m \quad \text{} \\
+    x_{i}&\ge0, \quad i=0,1,2,...,n \quad \text{}
+\end{align*}
+By choosing $x_0$ large enough, a feasible solution can be found for the auxiliary problem, which then provides a starting feasible basis for the original problem.
+
+\subsection{Degeneracy}
+\textbf{Degeneracy} occurs when more than one outgoing variable is possible (i.e., more than one strictest constraint). This can lead to situations where there is no improvement in the objective function, potentially causing an infinite loop (cycling). Techniques like the \textbf{Revised Simplex Method} or perturbation methods are used to handle degeneracy and ensure convergence.
+
+The Revised Simplex Method also deals with problems in the form:
+\begin{align*}
+    \max \quad & z = \mathbf{c}^T \mathbf{x} \quad \text{} \\
+    \text{s.t.} \quad & A\mathbf{x} \le \mathbf{b} \quad \text{} \\
+    & \mathbf{x} \ge 0 \quad \text{}
+\end{align*}
+It involves introducing slack variables. For iteration, the constraints can be expressed by partitioning $\tilde{A}$ and $\mathbf{x}$ into basic (B) and non-basic (N) components:
+\begin{equation}
+    \tilde{A}\mathbf{x}=[A_{B} \mid A_{N}]\begin{pmatrix}x_{B} \\ x_{N}\end{pmatrix}=\mathbf{b} \quad \text{}
+\end{equation}
+where $A_B$ is the basic matrix and $A_N$ is the non-basic matrix.
+The objective function can be written as:
+\begin{equation}
+    Z=C_{B}^{T}X_{B}+C_{N}^{T}X_{N} \quad \text{}
+\end{equation}
+From the constraints, $A_{B}X_{B}+A_{N}X_{N}=b$, we can express $X_{B}$ as:
+\begin{equation}
+    x_{B}=A_{B}^{-1}b-A_{B}^{-1}A_{N}x_{N} \quad \text{}
+\end{equation}
+Substituting this into the objective function (with $B = A_B^{-1}$):
+\begin{align*}
+    Z&=c_{B}^{T}x_{B}+c_{N}^{T}x_{N} \quad \text{} \\
+    Z&=c_{B}^{T}(A_{B}^{-1}b-A_{B}^{-1}A_{N}x_{N})+c_{N}^{T}x_{N} \quad \text{} \\
+    Z&=c_{B}^{T}A_{B}^{-1}b+(c_{N}^{T}-c_{B}^{T}A_{B}^{-1}A_{N})x_{N} \quad \text{}
+\end{align*}
+This formulation is used for efficient calculations in the tableau:
+\begin{align*}
+    x_{B}&=\overline{B}x_{B}-B^{-1}A_{N}x_{N}\ge0 \quad \text{} \\
+    Z&=\underbrace{c_{B}^{T}B^{-1}b}_{x^{k}}+(c_{N}^{T}-c_{B}^{T}B^{-1}A_{N})x_{N} \quad \text{}
+\end{align*}
+The revised simplex method uses a more efficient way to perform iterations by focusing on matrix inversions.
+
+\end{document}
