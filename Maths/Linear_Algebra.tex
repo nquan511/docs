@@ -396,6 +396,155 @@ When applying PCA  to time series data, it is essential that each series be \emp
 \end{itemize}
 
 
+\section{PCA in Financial Markets: Factor Interpretation, Trading, and Pitfalls}
+
+This section connects the mathematical PCA machinery to its use in financial markets.
+Fixed–income markets, in particular, are well described by a small set of
+\emph{uncorrelated linear factors} that capture the dominant co-movements of the yield curve.
+PCA provides a statistical method to estimate these factors, their loadings,
+and the hedging ratios needed to neutralise them.
+
+\subsection{Factor Representation and PCA Interpretation}
+
+A generic $K$-factor model for $n$ assets can be written as:
+\[
+\begin{pmatrix}
+y_1^t \\ \vdots \\ y_n^t
+\end{pmatrix}
+=
+\sum_{i=1}^K \alpha_i^t
+\begin{pmatrix}
+f_{i1} \\ \vdots \\ f_{in}
+\end{pmatrix}
++
+\begin{pmatrix}
+\epsilon_1^t \\ \vdots \\ \epsilon_n^t
+\end{pmatrix},
+\]
+where $\alpha_i^t$ are time-varying factor values,
+$f_{ij}$ are loadings, and $\epsilon_i^t$ are idiosyncratic residuals.
+
+PCA provides a direct statistical analogue:
+\begin{itemize}
+    \item \textbf{Factors} = principal components (scores)
+    \item \textbf{Loadings} = eigenvectors (columns of $\mathbf{V}$)
+    \item \textbf{Residuals} = deviations from PCA reconstruction
+\end{itemize}
+
+In practice, one must remember:
+\begin{itemize}
+    \item eigenvalues may be numerically unstable,
+    \item eigenvectors must be orthogonal,
+    \item eigenvectors are defined up to a sign ($x$ and $-x$ are equivalent).
+\end{itemize}
+
+\subsection{Applications to Yield Curves: Interpretation and Hedging}
+
+PCA is especially effective in fixed–income markets.  
+Using weekly Bund yields (2y, 5y, 7y, 10y) as an example,
+the first three principal components typically correspond to:
+
+\begin{itemize}
+    \item \textbf{PC1 — Level}: all loadings have the same sign.
+    \item \textbf{PC2 — Slope}: short and long maturities load with opposite signs.
+    \item \textbf{PC3 — Curvature}: mid–maturities load opposite to the wings.
+\end{itemize}
+
+The largest loading on the first eigenvector identifies the pivot point of level shifts.
+PCs may correlate with macroeconomic drivers (other bond markets, FX, equity indices),
+although PC3 is often uncorrelated.
+
+\paragraph{Hedging Using PCA Loadings}
+
+Let there be $m$ traded maturities with price sensitivities (BPVs)
+\[
+BPV_j = \frac{\partial P_j}{\partial y_j}, \qquad j=1,\dots,m,
+\]
+and PCA eigenvectors
+\[
+\mathbf{v}_i = (e_{i,1}, e_{i,2}, \dots, e_{i,m})^\top.
+\]
+
+A hedge uses notional vector
+\[
+\mathbf{n} = (n_1,\dots,n_m)^\top.
+\]
+
+\textbf{Neutralising PC exposure} requires setting the portfolio’s sensitivity to the chosen PCs to zero.  
+For example, to hedge a \emph{5y–10y steepening} (mostly a slope factor):
+
+\[
+n_5 BPV_5 e_{1,5} + n_{10} BPV_{10} e_{1,10} = 0.
+\]
+
+Solving for the hedge ratio:
+\[
+\frac{n_5}{n_{10}}
+=
+\frac{BPV_{10}}{BPV_5}
+\left( \frac{e_{1,5}}{e_{1,10}} \right).
+\]
+
+This ensures that the two instruments exactly offset their PC1 exposures.
+
+More generally, hedging against PC1 and PC2 simultaneously requires solving:
+\[
+\mathbf{H}\mathbf{n}=0,
+\qquad
+\mathbf{H} =
+\begin{pmatrix}
+BPV_1 e_{1,1} & \cdots & BPV_m e_{1,m} \\
+BPV_1 e_{2,1} & \cdots & BPV_m e_{2,m}
+\end{pmatrix}.
+\]
+
+In some applications, this is written compactly (for selected instruments) as:
+\[
+\begin{pmatrix}
+n_2 \\ n_{10}
+\end{pmatrix}
+=
+\begin{pmatrix}
+BPV_2 l_{12} \\
+BPV_{10} l_{22}
+\end{pmatrix},
+\]
+where $l_{ij}$ denotes the required PCA loading ratios.
+
+
+\paragraph{PCA-Based Trade Construction}
+
+A typical PCA-based trading workflow includes:
+\begin{itemize}
+    \item choosing relevant maturities and data horizon (e.g., 1 year),
+    \item running PCA on the full tenor set, identifying meaningful maturities,
+    \item re-running PCA on a reduced universe for robustness,
+    \item checking numerical stability,
+    \item inspecting eigenvalues, eigenvectors, and PC time series,
+    \item testing correlations between PCs and macro drivers,
+    \item computing hedge ratios and expected carry for trade construction.
+\end{itemize}
+
+\subsection{Pitfalls: Correlation Breakdown and Instability}
+
+
+
+Despite their mathematical appeal, PCA factors are not guaranteed to be stable through time.
+
+\paragraph{Correlation Breakdown}
+The PCs are uncorrelated \emph{over the full sample}, but may become correlated during subperiods.
+Such breakdowns can cause hedges to fail.  
+Traders therefore check PC correlations specifically around the trade entry window.
+
+\paragraph{Eigenvector Instability}
+Eigenvectors may rotate over time, leading to:
+\begin{itemize}
+    \item misaligned hedges,
+    \item incorrect economic interpretation of factors.
+\end{itemize}
+
+This instability is especially relevant for stressed market periods or when the yield–curve regime shifts.
+
 \section{Kalman Filter}
 
 The Kalman Filter is a powerful algorithm used for state estimation in dynamic systems. It operates in two main phases: Predict and Update.
