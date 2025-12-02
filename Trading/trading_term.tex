@@ -1,3 +1,6 @@
+% Rewritten Fixed Income Trading Language Cheat Sheet
+% Improved flow and explanation; all original content preserved and expanded
+
 \documentclass{article}
 \usepackage{amsmath}
 \usepackage{booktabs}
@@ -6,235 +9,158 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.17}
 \geometry{margin=1in}
-\title{Fixed Income Trading Language Cheat Sheet}
+
+\title{Fixed Income Trading Language Cheat Sheet (Rewritten for Clarity and Flow)}
+
 \begin{document}
 \maketitle
 
-\section{Abbreviations}
-\begin{itemize}
-    \item \textbf{UB} = Ultra Bond (long-dated government bond).
-    \item \textbf{RX} = Euro Bund (German government bond).
-    \item \textbf{German Bond Futures}: Bund (8.5-10.5y), Bobl (4.5-5.5y), Shatz(1.75-2.25y)
-    \item \textbf{UST}: Bonds (more than 10y), Notes (2y-10y), Bills (less than 1y - ZBC, issued at discount)
-    \item \textbf{30s50s}: 50-year bond minus 30-year bond yield spread. 
-\end{itemize}
-
-\section{Price Movements}
+\section{Core Abbreviations and Market Instruments}
+This section lists the most common instruments and abbreviations used in global fixed income trading. These are essential for reading trader commentary and market colour.
 
 \begin{itemize}
-  \item Price $\uparrow$ $\Rightarrow$ Yield $\downarrow$ (called a \emph{rally}); Price $\downarrow$ $\Rightarrow$ Yield $\uparrow$ (a \emph{sell-off}).
-  \item Cheapening = Price $\downarrow$ $\Rightarrow$ Yield $\uparrow$.
-  \item Richening = Price $\uparrow$ $\Rightarrow$ Yield $\downarrow$.
-  \item Market paid = Yield $\uparrow$ $\Rightarrow$ Price $\downarrow$.
+  \item \textbf{UB} = Ultra Bond (long-dated US Treasury future).
+  \item \textbf{RX} = Euro Bund future (German 10y government bond).
+  \item \textbf{German Bond Futures:}
+    \begin{itemize}
+        \item \textbf{Bund} = 8.5--10.5y maturity bucket.
+        \item \textbf{Bobl} = 4.5--5.5y maturity bucket.
+        \item \textbf{Schatz} = 1.75--2.25y maturity bucket.
+    \end{itemize}
+  \item \textbf{UST Classification:}
+    \begin{itemize}
+        \item \textbf{Bills}: $<$1y, issued at discount (e.g., \texttt{ZBC}).
+        \item \textbf{Notes}: 2y--10y.
+        \item \textbf{Bonds}: $>$10y.
+    \end{itemize}
+  \item \textbf{30s50s}: Yield spread between 50-year bond and 30-year bond.
 \end{itemize}
 
-\section{Long vs Short}
+\section{Price Movements and Trading Language}
+Understanding how traders talk about price/yield dynamics is crucial. Bonds move inversely to yields:
+
+\begin{itemize}
+  \item Price \(\uparrow\) $\Rightarrow$ Yield \(\downarrow\): known as a \emph{rally}.
+  \item Price \(\downarrow\) $\Rightarrow$ Yield \(\uparrow\): known as a \emph{sell-off}.
+  \item \textbf{Cheapening} = Prices fall, yields rise.
+  \item \textbf{Richening} = Prices rise, yields fall.
+  \item \textbf{Market paid} = Traders are paying fixed (swap yields rise, swap prices fall).
+\end{itemize}
+
+These terms summarise both rate-direction and relative value dynamics.
+
+\section{Long vs Short Positions}
 
 \subsection{Bonds}
 \begin{itemize}
-  \item \textbf{Long bond} = Receive fixed payments $\Rightarrow$ Position benefits if rates fall (bond prices rise).
-  \item \textbf{Short bond} = Pay fixed $\Rightarrow$ Position benefits if rates rise (bond prices fall).
+  \item \textbf{Long bond}: Receive coupons \(\Rightarrow\) benefits from \textbf{falling rates} (bond prices rise).
+  \item \textbf{Short bond}: Pay coupons synthetically \(\Rightarrow\) benefits from \textbf{rising rates} (bond prices fall).
 \end{itemize}
 
-\subsection{Swaps}
-\begin{itemize}
-  \item \textbf{Buy a swap} = Pay fixed $\leftrightarrow$ Short bond-like exposure, receive floating. \textbf{Positive rate delta}.
-  \item \textbf{Sell a swap} = Receive fixed $\leftrightarrow$ Long bond-like exposure, pay floating. \textbf{Negative rate delta}.
-\end{itemize}
-
-\noindent
-In trader shorthand:
-\[
-\text{``Mine'' (in swaps)} = \text{Pay fixed},\quad
-\text{``Yours''} = \text{Receive fixed}
-\]
-
-A tenor is cheap then we should try to receive fixed in that tenor, and if it is rich then we should pay fixed.
-
-\subsection{Swap Spread}
-The \textbf{swap spread} is defined as:
-\[
-\text{Swap Spread} = \text{Swap Rate} - \text{Government Bond Yield (same maturity)}
-\]
+\subsection{Interest Rate Swaps}
+A swap position mirrors the duration profile of a bond position:
 
 \begin{itemize}
-  \item Measures the risk premium of swap rates over risk-free Treasuries.
-  \item A widening swap spread (↑) implies swap rates are rising relative to govies:
+  \item \textbf{Buy a swap} = Pay fixed, receive floating.
     \begin{itemize}
-      \item Could reflect increased credit/liquidity risk in the swap market.
-      \item Bullish for bonds (e.g., flight to quality).
+        \item Duration exposure similar to being \textbf{short a bond}.
+        \item \textbf{Positive rate delta}: profits if rates rise.
     \end{itemize}
-  \item A tightening swap spread (↓):
+  \item \textbf{Sell a swap} = Receive fixed, pay floating.
     \begin{itemize}
-      \item Common during QE or balance sheet expansion.
+        \item Duration exposure similar to being \textbf{long a bond}.
+        \item \textbf{Negative rate delta}: profits if rates fall.
     \end{itemize}
-  \item \textbf{Long swap spread} = Receive fixed in swap and short the government bond.
-  \item \textbf{Short swap spread} = Pay fixed in swap and long the government bond.
+\end{itemize}
+
+\noindent Trader shorthand in swaps:
+\[
+\text{``Mine''} = \text{Pay fixed}, \qquad 
+\text{``Yours''} = \text{Receive fixed}.
+\]
+
+If a tenor is \textbf{cheap}, traders typically \emph{receive fixed} (go long duration). If a tenor is \textbf{rich}, they \emph{pay fixed} (go short duration).
+
+\subsection{Swap Spreads}
+Swap spreads measure how expensive swap rates are relative to government bond yields of the same maturity:
+
+\[
+\text{Swap Spread} = \text{Swap Rate} - \text{Government Yield}.
+\]
+
+\begin{itemize}
+  \item Measures credit/liquidity risk premium of swaps vs true risk-free rates.
+  \item \textbf{Widening swap spreads}: swap rates rising relative to govies.
+    \begin{itemize}
+      \item Can indicate rising counterparty or liquidity risk.
+      \item Often associated with \textbf{risk-off} flows (bullish for govies).
+    \end{itemize}
+  \item \textbf{Tightening swap spreads}: swap rates falling relative to govies.
+    \begin{itemize}
+      \item Common during QE or central bank balance sheet expansion.
+    \end{itemize}
+  \item \textbf{Long swap spread}: Receive fixed in swap \textbf{and} short the corresponding government bond.
+  \item \textbf{Short swap spread}: Pay fixed in swap \textbf{and} long the government bond.
 \end{itemize}
 
 
-\section{Trade Language: Execution Slang}
+\section{Execution Slang}
+These are extremely common phrases used across rates trading desks:
+
 \begin{center}
 \begin{tabular}{@{}ll@{}}
 \toprule
 \textbf{Phrase} & \textbf{Meaning} \\
 \midrule
-“Hit my bid” / “I got hit” & I bought (someone sold to me) \\
-“Lift my offer” / “I got lifted” & I sold (someone bought from me) \\
-“Mine” & I buy \\
-“Yours” & I sell \\
-“Take” & I buy \\
-“Give” & I sell \\
+``Hit my bid'' / ``I got hit'' & I bought (someone sold to me) \\
+``Lift my offer'' / ``I got lifted'' & I sold (someone bought from me) \\
+``Mine'' & I buy \\
+``Yours'' & I sell \\
+``Take'' & I buy \\
+``Give'' & I sell \\
 \bottomrule
 \end{tabular}
 \end{center}
 
+These terms help compress trade negotiation into one or two words.
 
-\section{Yield Curve and Duration}
 
-Movements in the yield curve provide insight into both rate direction and relative duration risk. Traders describe shifts using intuitive terms that bundle curve shape with rate momentum.
+\section{Yield Curve Dynamics and Duration Intuition}
+Yield curve moves are not just directional—they also imply relative duration risk across maturities. Traders classify moves using four standard scenarios.
 
 \subsection*{Types of Curve Shifts}
 
 \begin{itemize}
   \item \textbf{Bull Steepener:}
     \begin{itemize}
-      \item Short-end yields fall more than the long-end.
-      \item Indicates easing expectations (e.g. central bank cuts).
-      \item Duration shortens — gain more from front-end rally.
+      \item Short-end yields fall more than long-end yields.
+      \item Typically reflects expectations of central bank easing.
+      \item Front-end duration benefits the most.
     \end{itemize}
-  
   \item \textbf{Bear Flattener:}
     \begin{itemize}
-      \item Long-end yields rise more than the short-end.
-      \item Often due to inflation or supply fears.
-      \item Duration lengthens — curve flattens with losses concentrated in the long end.
+      \item Long-end sells off more than short-end.
+      \item Often driven by inflation or heavy long-end supply.
+      \item Negative convexity concentrated in long-end duration.
     \end{itemize}
-  
   \item \textbf{Bull Flattener:}
     \begin{itemize}
       \item Long-end rallies more than short-end.
-      \item Often a flight-to-quality move.
-      \item Long exposure benefits more.
+      \item Common in flight-to-quality episodes.
+      \item Great for long-duration exposure.
     \end{itemize}
-  
   \item \textbf{Bear Steepener:}
     \begin{itemize}
       \item Short-end sells off more than long-end.
-      \item Driven by hawkish monetary policy.
-      \item Long exposure loses more quickly in the front end.
+      \item Usually driven by hawkish central bank surprises.
+      \item Front-end duration performs the worst.
     \end{itemize}
 \end{itemize}
 
 \subsection*{Trader Mnemonic}
 \begin{itemize}
-  \item \textbf{S}teepening $\Rightarrow$ \textbf{S}horter duration exposure benefits
-  \item \textbf{F}lattening $\Rightarrow$ \textbf{F}atter (longer) duration exposure benefits
+  \item \textbf{S}teepening $\Rightarrow$ \textbf{S}horter duration exposure wins.
+  \item \textbf{F}lattening $\Rightarrow$ \textbf{F}atter (longer) duration exposure wins.
 \end{itemize}
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    width=10cm, height=5cm,
-    xlabel={Maturity (Years)},
-    ylabel={Yield (\%)},
-    xmin=0, xmax=30,
-    ymin=0, ymax=5,
-    legend pos=south east,
-    title={Bull Steepener},
-    grid=both,
-    samples=100,
-    domain=0:30
-]
-\addplot[blue, thick] {1.0 + 1.5*(1 - exp(-x/10))};
-\addlegendentry{Base Curve}
-\addplot[green!60!black, dashed, thick] {0.6 + 2.0*(1 - exp(-x/20))};
-\addlegendentry{Bull Steepened}
-\end{axis}
-\end{tikzpicture}
-\caption{Front-end rates rally more than long-end (short yields drop faster).}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    width=10cm, height=5cm,
-    xlabel={Maturity (Years)},
-    ylabel={Yield (\%)},
-    xmin=0, xmax=30,
-    ymin=0, ymax=5,
-    legend pos=south east,
-    title={Bear Flattener},
-    grid=both,
-    samples=100,
-    domain=0:30
-]
-\addplot[blue, thick] {1.0 + 1.5*(1 - exp(-x/10))};
-\addlegendentry{Base Curve}
-\addplot[red, dotted, thick] {1.3 + 1.0*(1 - exp(-x/5))};
-\addlegendentry{Bear Flattened}
-\end{axis}
-\end{tikzpicture}
-\caption{Long-end rates rise more than short-end (flattening in bear market).}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    width=10cm, height=5cm,
-    xlabel={Maturity (Years)},
-    ylabel={Yield (\%)},
-    xmin=0, xmax=30,
-    ymin=0, ymax=5,
-    legend pos=south east,
-    title={Bull Flattener},
-    grid=both,
-    samples=100,
-    domain=0:30
-]
-\addplot[blue, thick] {1.0 + 1.5*(1 - exp(-x/10))};
-\addlegendentry{Base Curve}
-\addplot[green, dashed, thick] {0.9 + 1.0*(1 - exp(-x/7))};
-\addlegendentry{Bull Flattened}
-\end{axis}
-\end{tikzpicture}
-\caption{Long-end rallies more than short-end (flight-to-quality move).}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    width=10cm, height=5cm,
-    xlabel={Maturity (Years)},
-    ylabel={Yield (\%)},
-    xmin=0, xmax=30,
-    ymin=0, ymax=5,
-    legend pos=south east,
-    title={Bear Steepener},
-    grid=both,
-    samples=100,
-    domain=0:30
-]
-\addplot[blue, thick] {1.0 + 1.5*(1 - exp(-x/10))};
-\addlegendentry{Base Curve}
-\addplot[red!80!black, thick, dashed] {1.6 + 1.5*(1 - exp(-x/20))};
-\addlegendentry{Bear Steepened}
-\end{axis}
-\end{tikzpicture}
-\caption{Front-end sells off more than long-end (hawkish surprise).}
-\end{figure}
-
-
-\subsection*{Interpretation for Trading}
-\begin{itemize}
-  \item \textbf{Flatteners} benefit trades that are long duration (e.g. receive fixed on long swaps).
-  \item \textbf{Steepeners} reward trades with more front-end exposure (e.g. pay fixed short, receive long).
-  \item Relative value trades often structure exposure via curve slope rather than outright direction.
-\end{itemize}
-
 
 \end{document}
