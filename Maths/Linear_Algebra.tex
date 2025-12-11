@@ -21,24 +21,113 @@
 \newpage
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Matrix Derivative Rules}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{tabular}{|l|l|}
-\hline
-\textbf{Function} & \textbf{Gradient w.r.t. } \(\mathbf{x}\) \\
-\hline
-\(\mathbf{b}^T \mathbf{x}\) or \(\mathbf{x}^T \mathbf{b}\) & \(\mathbf{b}\) \\
-\hline
-\(\mathbf{x}^T A \mathbf{x}\) & \((A + A^T)\mathbf{x}\); if \(A = A^T\): \(2A\mathbf{x}\) \\
-\hline
-\(\|\mathbf{x}\|^2 = \mathbf{x}^T \mathbf{x}\) & \(2\mathbf{x}\) \\
-\hline
-\(\|\mathbf{x}\|\) & \(\frac{\mathbf{x}}{\|\mathbf{x}\|}\), if \(\mathbf{x} \ne 0\) \\
-\hline
-\(\mathbf{b}^T A \mathbf{x}\) & \(A^T \mathbf{b}\) \\
-\hline
-\end{tabular}
+In this section we collect standard derivative identities for 
+scalar-valued functions of a vector variable.  
+Throughout, $\mathbf{x} \in \mathbb{R}^n$ is the differentiation 
+variable, and gradients are taken in the usual sense:
+\[
+\nabla_{\mathbf{x}} f(\mathbf{x}) \in \mathbb{R}^n,
+\qquad
+f : \mathbb{R}^n \to \mathbb{R}.
+\]
 
+Unless otherwise stated, $A$ denotes a real matrix of appropriate 
+dimensions and $\mathbf{b}$ a real vector.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Linear and Affine Functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}
+    \item \textbf{Linear form.}
+    For $\mathbf{b} \in \mathbb{R}^n$,
+    \[
+        f(\mathbf{x}) = \mathbf{b}^\top \mathbf{x}
+        \quad\Rightarrow\quad
+        \nabla_{\mathbf{x}} f = \mathbf{b}.
+    \]
+
+    \item \textbf{Affine form.}
+    For $A \in \mathbb{R}^{m \times n}$, $\mathbf{c} \in \mathbb{R}^m$,
+    \[
+        f(\mathbf{x}) = \mathbf{c}^\top(A\mathbf{x})
+        \quad\Rightarrow\quad
+        \nabla_{\mathbf{x}} f = A^\top \mathbf{c}.
+    \]
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Quadratic Forms}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}
+    \item \textbf{General quadratic form.}
+    For $A \in \mathbb{R}^{n\times n}$,
+    \[
+        f(\mathbf{x}) = \mathbf{x}^\top A \mathbf{x}
+        \quad\Rightarrow\quad
+        \nabla_{\mathbf{x}} f = (A + A^\top)\mathbf{x}.
+    \]
+
+    \item \textbf{Symmetric case.}
+    If $A = A^\top$, the above simplifies to
+    \[
+        \nabla_{\mathbf{x}}(\mathbf{x}^\top A \mathbf{x}) = 2A\mathbf{x}.
+    \]
+
+    \item \textbf{Shifted quadratic form.}
+    For $\mathbf{b} \in \mathbb{R}^n$,
+    \[
+        f(\mathbf{x}) = (\mathbf{x} - \mathbf{b})^\top A (\mathbf{x} - \mathbf{b})
+        \quad\Rightarrow\quad
+        \nabla_{\mathbf{x}} f 
+        = (A + A^\top)(\mathbf{x} - \mathbf{b}).
+    \]
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Norms and Related Expressions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}
+    \item \textbf{Squared Euclidean norm.}
+    \[
+        f(\mathbf{x}) = \|\mathbf{x}\|^2 = \mathbf{x}^\top \mathbf{x}
+        \quad\Rightarrow\quad
+        \nabla_{\mathbf{x}} f = 2\mathbf{x}.
+    \]
+
+    \item \textbf{Euclidean norm.}
+    For $\mathbf{x} \neq 0$,
+    \[
+        f(\mathbf{x}) = \|\mathbf{x}\|
+        \quad\Rightarrow\quad
+        \nabla_{\mathbf{x}} f = \frac{\mathbf{x}}{\|\mathbf{x}\|}.
+    \]
+
+    \item \textbf{Quadratic residual norm.}
+    For $A \in \mathbb{R}^{m \times n}$, $\mathbf{b} \in \mathbb{R}^m$,
+    \[
+        f(\mathbf{x}) = \|A\mathbf{x} - \mathbf{b}\|^2
+        \quad\Rightarrow\quad
+        \nabla_{\mathbf{x}} f = 2A^\top(A\mathbf{x} - \mathbf{b}).
+    \]
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Bilinear Forms}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Let $\mathbf{b} \in \mathbb{R}^m$ and $A \in \mathbb{R}^{m\times n}$. Then
+\[
+    f(\mathbf{x}) = \mathbf{b}^\top A \mathbf{x}
+    \quad\Rightarrow\quad
+    \nabla_{\mathbf{x}} f = A^\top \mathbf{b}.
+\]
 
 \section{Matrix Rank}
 \begin{definition} (Full Rank Matrix)
